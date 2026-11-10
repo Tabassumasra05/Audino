@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import com.audino.ui.components.SearchField?>
+
+<StackPane fx:id="adminRootPane" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.audino.controller.AdminDashboardController"
+           style="-fx-background-color: transparent;">
+
+    <TabPane tabClosingPolicy="UNAVAILABLE" styleClass="clinical-tab-pane" style="-fx-background-color: transparent;">
+
+        <!-- TAB 1: OVERVIEW & ANALYTICS -->
+        <Tab text="Executive Overview">
+            <graphic>
+                <FontIcon iconLiteral="mdi2c-chart-box" iconSize="16" />
+            </graphic>
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 16px;">
+                <VBox spacing="20">
+                    <!-- KPI Cards Row -->
+                    <HBox fx:id="statCardsContainer" spacing="16" />
+
+                    <!-- Charts Grid -->
+                    <GridPane hgap="16" vgap="16">
+
+                        <!-- Line Chart: 7-day Prescriptions -->
+                        <VBox styleClass="surface-card" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS">
+                            <Label text="7-DAY PRESCRIPTION ACTIVITY TREND" styleClass="card-title" />
+                            <LineChart fx:id="prescriptionTrendChart" prefHeight="260.0" legendVisible="false">
+                                <xAxis><CategoryAxis label="Date" /></xAxis>
+                                <yAxis><NumberAxis label="Volume" /></yAxis>
+                            </LineChart>
+                        </VBox>
+
+                        <!-- Pie Chart: Alert Severity Distribution -->
+                        <VBox styleClass="surface-card" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS">
+                            <Label text="CLINICAL CDS ALERTS BY SEVERITY" styleClass="card-title" />
+                            <PieChart fx:id="alertSeverityChart" prefHeight="260.0" />
+                        </VBox>
+
+                        <!-- Bar Chart: Top Medicines -->
+                        <VBox styleClass="surface-card" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS">
+                            <Label text="MOST PRESCRIBED FORMULARY MEDICINES (UNITS DISPENSED)" styleClass="card-title" />
+                            <BarChart fx:id="topMedicationsChart" prefHeight="240.0" legendVisible="false">
+                                <xAxis><CategoryAxis label="Medication" /></xAxis>
+                                <yAxis><NumberAxis label="Units" /></yAxis>
+                            </BarChart>
+                        </VBox>
+                    </GridPane>
+                </VBox>
+            </ScrollPane>
+        </Tab>
+
+        <!-- TAB 2: STAFF MANAGEMENT -->
+        <Tab text="Staff Management">
+            <graphic>
+                <FontIcon iconLiteral="mdi2a-account-cog" iconSize="16" />
+            </graphic>
+            <VBox spacing="14" style="-fx-padding: 16px;">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <SearchField fx:id="staffSearchField" HBox.hgrow="ALWAYS" />
+                    <Button text="+ Add Staff Member" onAction="#openAddStaffDialog" styleClass="btn-primary" />
+                </HBox>
+
+                <TableView fx:id="staffTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+                    <columns>
+                        <TableColumn fx:id="staffColUsername" text="Username" prefWidth="120.0" />
+                        <TableColumn fx:id="staffColName" text="Full Legal Name" prefWidth="180.0" />
+                        <TableColumn fx:id="staffColRole" text="Role" prefWidth="110.0" />
+                        <TableColumn fx:id="staffColSpecialization" text="Specialization &amp; Registration" prefWidth="240.0" />
+                        <TableColumn fx:id="staffColStatus" text="Status" prefWidth="110.0" />
+                        <TableColumn fx:id="staffColActions" text="Actions" prefWidth="220.0" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </Tab>
+
+        <!-- TAB 3: FORMULARY MEDICATIONS -->
+        <Tab text="Formulary Medications">
+            <graphic>
+                <FontIcon iconLiteral="mdi2p-pill" iconSize="16" />
+            </graphic>
+            <VBox spacing="14" style="-fx-padding: 16px;">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <SearchField fx:id="medSearchField" HBox.hgrow="ALWAYS" />
+                    <Label text="Filter Type:" style="-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: -color-text-secondary;" />
+                    <ComboBox fx:id="medTypeFilter" style="-fx-min-width: 140px;" />
+                    <Button text="+ Add Medication" onAction="#openAddMedicationDialog" styleClass="btn-primary" />
+                </HBox>
+
+                <TableView fx:id="medTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+                    <columns>
+                        <TableColumn fx:id="medColBrand" text="Brand Name" prefWidth="160.0" />
+                        <TableColumn fx:id="medColGeneric" text="Generic Molecule" prefWidth="160.0" />
+                        <TableColumn fx:id="medColType" text="Type" prefWidth="100.0" />
+                        <TableColumn fx:id="medColStrength" text="Strength" prefWidth="100.0" />
+                        <TableColumn fx:id="medColPrice" text="Price / Unit" prefWidth="100.0" />
+                        <TableColumn fx:id="medColRxNorm" text="RxNorm Code" prefWidth="110.0" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </Tab>
+
+        <!-- TAB 4: INTERACTION RULES -->
+        <Tab text="Interaction Rules (CDS)">
+            <graphic>
+                <FontIcon iconLiteral="mdi2a-alert-octagon" iconSize="16" />
+            </graphic>
+            <VBox spacing="14" style="-fx-padding: 16px;">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="Filter Category:" style="-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: -color-text-secondary;" />
+                    <ComboBox fx:id="ruleTypeFilter" style="-fx-min-width: 180px;" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Button text="+ Publish New Rule" onAction="#openAddRuleDialog" styleClass="btn-primary" />
+                </HBox>
+
+                <TableView fx:id="ruleTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+                    <columns>
+                        <TableColumn fx:id="ruleColType" text="Rule Type" prefWidth="130.0" />
+                        <TableColumn fx:id="ruleColKey1" text="Trigger 1" prefWidth="140.0" />
+                        <TableColumn fx:id="ruleColKey2" text="Trigger 2" prefWidth="140.0" />
+                        <TableColumn fx:id="ruleColSeverity" text="Severity" prefWidth="110.0" />
+                        <TableColumn fx:id="ruleColDescription" text="Clinical Warning &amp; Mechanism" prefWidth="380.0" />
+                        <TableColumn fx:id="ruleColActions" text="Action" prefWidth="90.0" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </Tab>
+
+        <!-- TAB 5: FORENSIC AUDIT TRAIL -->
+        <Tab text="Audit Trail">
+            <graphic>
+                <FontIcon iconLiteral="mdi2f-file-eye" iconSize="16" />
+            </graphic>
+            <VBox spacing="14" style="-fx-padding: 16px;">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <SearchField fx:id="auditSearchField" HBox.hgrow="ALWAYS" />
+                </HBox>
+
+                <TableView fx:id="auditTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+                    <columns>
+                        <TableColumn fx:id="auditColTime" text="Timestamp" prefWidth="150.0" />
+                        <TableColumn fx:id="auditColOperator" text="Operator" prefWidth="110.0" />
+                        <TableColumn fx:id="auditColOperation" text="Operation" prefWidth="140.0" />
+                        <TableColumn fx:id="auditColEntity" text="Target Entity" prefWidth="160.0" />
+                        <TableColumn fx:id="auditColDetails" text="Forensic Audit Details" prefWidth="420.0" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </Tab>
+
+    </TabPane>
+</StackPane>

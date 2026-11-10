@@ -47,7 +47,11 @@ public class QueueService implements QueueSubject {
     public QueueService(TokenDAO tokenDAO, PatientDAO patientDAO, AuditLogDAO auditLogDAO) {
         this.tokenDAO = Objects.requireNonNull(tokenDAO, "TokenDAO must not be null");
         this.patientDAO = Objects.requireNonNull(patientDAO, "PatientDAO must not be null");
-        this.auditLogDAO = Objects.requireNonNull(auditLogDAO, "AuditLogDAO must not be null");
+        this.auditLogDAO = auditLogDAO;
+    }
+
+    public QueueService(TokenDAO tokenDAO, PatientDAO patientDAO) {
+        this(tokenDAO, patientDAO, null);
     }
 
     /**
@@ -109,6 +113,10 @@ public class QueueService implements QueueSubject {
         }
     }
 
+    public void addObserver(QueueObserver observer) {
+        registerObserver(observer);
+    }
+
     @Override
     public void removeObserver(QueueObserver observer) {
         if (observer != null) {
@@ -143,17 +151,23 @@ public class QueueService implements QueueSubject {
         Token token = new Token(nextNo, patientId, doctorUsername);
         token = tokenDAO.save(token);
 
-        auditLogDAO.save(new AuditLog(
-            issuedBy != null ? issuedBy : "SYSTEM",
-            "TOKEN_ISSUED",
-            "Token",
-            token.getTokenNo(),
-            "Issued token " + token.getTokenNo() + " for patient ID " + patientId + " (Assigned to: " + doctorUsername + ")"
-        ));
+        if (auditLogDAO != null) {
+            auditLogDAO.save(new AuditLog(
+                issuedBy != null ? issuedBy : "SYSTEM",
+                "TOKEN_ISSUED",
+                "Token",
+                token.getTokenNo(),
+                "Issued token " + token.getTokenNo() + " for patient ID " + patientId + " (Assigned to: " + doctorUsername + ")"
+            ));
+        }
 
         logger.info("Issued token {} for patient ID {} (assigned: {})", token.getTokenNo(), patientId, doctorUsername);
         notifyObservers();
         return token;
+    }
+
+    public Token issueToken(Long patientId, String doctorUsername) {
+        return issueToken(patientId, doctorUsername, "RECEPTIONIST");
     }
 
     /**
@@ -169,13 +183,15 @@ public class QueueService implements QueueSubject {
             token.setDoctorUsername(doctorUsername);
             tokenDAO.updateStatus(token.getId(), TokenStatus.IN_CONSULTATION);
 
-            auditLogDAO.save(new AuditLog(
-                doctorUsername,
-                "TOKEN_CALLED",
-                "Token",
-                token.getTokenNo(),
-                "Doctor " + doctorUsername + " called token " + token.getTokenNo() + " into consultation"
-            ));
+            if (auditLogDAO != null) {
+                auditLogDAO.save(new AuditLog(
+                    doctorUsername,
+                    "TOKEN_CALLED",
+                    "Token",
+                    token.getTokenNo(),
+                    "Doctor " + doctorUsername + " called token " + token.getTokenNo() + " into consultation"
+                ));
+            }
 
             logger.info("Doctor {} called token {} into consultation.", doctorUsername, token.getTokenNo());
             notifyObservers();
@@ -194,13 +210,15 @@ public class QueueService implements QueueSubject {
             token.transitionTo(TokenStatus.COMPLETED);
             tokenDAO.updateStatus(token.getId(), TokenStatus.COMPLETED);
 
-            auditLogDAO.save(new AuditLog(
-                doctorUsername != null ? doctorUsername : token.getDoctorUsername(),
-                "TOKEN_COMPLETED",
-                "Token",
-                token.getTokenNo(),
-                "Consultation completed for token " + token.getTokenNo()
-            ));
+            if (auditLogDAO != null) {
+                auditLogDAO.save(new AuditLog(
+                    doctorUsername != null ? doctorUsername : token.getDoctorUsername(),
+                    "TOKEN_COMPLETED",
+                    "Token",
+                    token.getTokenNo(),
+                    "Consultation completed for token " + token.getTokenNo()
+                ));
+            }
 
             logger.info("Completed consultation for token {}.", token.getTokenNo());
             notifyObservers();
@@ -217,17 +235,24 @@ public class QueueService implements QueueSubject {
             token.transitionTo(TokenStatus.CANCELLED);
             tokenDAO.updateStatus(token.getId(), TokenStatus.CANCELLED);
 
-            auditLogDAO.save(new AuditLog(
-                cancelledBy,
-                "TOKEN_CANCELLED",
-                "Token",
-                token.getTokenNo(),
-                "Cancelled token " + token.getTokenNo() + " (Reason: " + reason + ")"
-            ));
+            if (auditLogDAO != null) {
+                auditLogDAO.save(new AuditLog(
+                    cancelledBy,
+                    "TOKEN_CANCELLED",
+                    "Token",
+                    token.getTokenNo(),
+                    "Cancelled token " + token.getTokenNo() + " (Reason: " + reason + ")"
+                ));
+            }
 
             logger.info("Cancelled token {} by {}.", token.getTokenNo(), cancelledBy);
             notifyObservers();
         }
+    }
+
+    public void updateTokenStatus(Long tokenId, TokenStatus newStatus) {
+        tokenDAO.updateStatus(tokenId, newStatus);
+        notifyObservers();
     }
 
     /**

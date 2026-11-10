@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<StackPane fx:id="kioskRoot" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.audino.controller.KioskController"
+           style="-fx-background-color: -color-bg;" prefWidth="1200.0" prefHeight="760.0">
+
+    <VBox spacing="0">
+
+        <!-- Kiosk Top Banner -->
+        <HBox alignment="CENTER_LEFT" spacing="16"
+              style="-fx-background-color: linear-gradient(to right, #071720, #0F766E); -fx-padding: 16px 32px;">
+            <StackPane style="-fx-background-color: #14B8A6; -fx-background-radius: 10px; -fx-pref-width: 40px; -fx-pref-height: 40px;">
+                <FontIcon iconLiteral="mdi2k-kiosk" iconSize="24" style="-fx-icon-color: #071720;" />
+            </StackPane>
+            <VBox spacing="1">
+                <Label text="AUDINO PATIENT SELF-SERVICE TERMINAL" style="-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #FFFFFF; -fx-letter-spacing: 1px;" />
+                <Label text="Outpatient Prescription Schedule &amp; Medication Guidance" style="-fx-font-size: 11px; -fx-text-fill: #5EEAD4;" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="returnToStaffBtn" text="Staff Sign In"
+                    style="-fx-background-color: rgba(255, 255, 255, 0.1); -fx-text-fill: #E2E8F0; -fx-font-size: 11px; -fx-background-radius: 6px; -fx-padding: 6px 14px; -fx-cursor: hand;" />
+        </HBox>
+
+        <!-- Dynamic Content Body -->
+        <StackPane VBox.vgrow="ALWAYS" style="-fx-padding: 24px;">
+
+            <!-- STEP 1: DUAL-FACTOR VERIFICATION SCREEN -->
+            <VBox fx:id="verifyContainer" alignment="CENTER" spacing="20">
+                <VBox maxWidth="650.0" spacing="18" styleClass="surface-card" style="-fx-padding: 32px;">
+                    <VBox spacing="4" alignment="CENTER">
+                        <Label text="Verify Your Consultation Identity" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: -color-text;" />
+                        <Label text="Please enter your today's Token Number and your registered contact detail" style="-fx-font-size: 13px; -fx-text-fill: -color-text-secondary;" />
+                    </VBox>
+
+                    <!-- Lockout Banner -->
+                    <Label fx:id="lockoutWarningLabel" wrapText="true"
+                           style="-fx-background-color: -color-critical-soft; -fx-text-fill: -color-critical; -fx-font-weight: bold; -fx-font-size: 12px; -fx-padding: 10px; -fx-background-radius: 6px;" />
+
+                    <HBox spacing="24" alignment="CENTER">
+                        <!-- Left Keypad & Token Input -->
+                        <VBox spacing="10" alignment="CENTER">
+                            <Label text="ENTER TOKEN NUMBER" style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted;" />
+                            <TextField fx:id="tokenNoField" promptText="e.g. 1 or T-001" alignment="CENTER"
+                                       style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-padding: 8px; -fx-background-radius: 8px; -fx-border-color: -color-primary; -fx-border-radius: 8px; -fx-max-width: 220px;" />
+                            <VBox fx:id="keypadContainer" />
+                        </VBox>
+
+                        <Separator orientation="VERTICAL" style="-fx-opacity: 0.3;" />
+
+                        <!-- Right Second Factor (Phone or DOB) -->
+                        <VBox spacing="14" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+                            <Label text="STEP 2: SECOND VERIFICATION FACTOR" style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted;" />
+
+                            <HBox spacing="12">
+                                <RadioButton fx:id="radioPhone" text="Phone Number" selected="true" style="-fx-font-weight: 600;" />
+                                <RadioButton fx:id="radioDob" text="Date of Birth" style="-fx-font-weight: 600;" />
+                            </HBox>
+
+                            <VBox spacing="6">
+                                <Label text="Enter last 4 or full 10 digits of your registered phone:" style="-fx-font-size: 12px; -fx-text-fill: -color-text-secondary;" />
+                                <TextField fx:id="phoneField" promptText="e.g. 9820112345" style="-fx-font-size: 15px; -fx-padding: 8px; -fx-background-radius: 8px; -fx-border-color: -color-border; -fx-border-radius: 8px;" />
+                                <DatePicker fx:id="dobPicker" maxWidth="Infinity" visible="false" managed="false" style="-fx-font-size: 14px;" />
+                            </VBox>
+
+                            <Region VBox.vgrow="ALWAYS" />
+
+                            <Button fx:id="verifyBtn" text="Verify &amp; View Prescription" maxWidth="Infinity"
+                                    style="-fx-background-color: -color-primary; -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-padding: 12px; -fx-cursor: hand;" />
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <!-- STEP 2: PATIENT SCHEDULE & CHRONO-GRID SCREEN -->
+            <VBox fx:id="scheduleContainer" spacing="16" visible="false" managed="false">
+
+                <!-- Header Card -->
+                <HBox alignment="CENTER_LEFT" spacing="16" styleClass="surface-card">
+                    <StackPane style="-fx-background-color: -color-primary-soft; -fx-background-radius: 12px; -fx-pref-width: 50px; -fx-pref-height: 50px;">
+                        <FontIcon iconLiteral="mdi2a-account-check" iconSize="28" style="-fx-icon-color: -color-primary;" />
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label fx:id="patientWelcomeLabel" text="Welcome, Patient" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: -color-text;" />
+                        <Label fx:id="patientMetaLabel" text="ID: P-XXXX" style="-fx-font-size: 12px; -fx-text-fill: -color-text-secondary;" />
+                        <Label fx:id="doctorConsultLabel" text="Prescribed by Dr. Name" style="-fx-font-size: 11px; -fx-font-weight: 600; -fx-text-fill: -color-primary;" />
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS" />
+
+                    <!-- Countdown Watchdog -->
+                    <Label fx:id="inactivityTimerLabel" text="Auto-Reset in 120s"
+                           style="-fx-font-size: 12px; -fx-text-fill: -color-text-muted; -fx-font-weight: bold; -fx-background-color: -color-surface-alt; -fx-padding: 6px 12px; -fx-background-radius: 6px;" />
+
+                    <Button fx:id="downloadPdfBtn" text="Save / Print PDF"
+                            style="-fx-background-color: -color-primary; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-background-radius: 8px; -fx-padding: 10px 18px; -fx-cursor: hand;" />
+
+                    <Button fx:id="doneBtn" text="Done &amp; Exit" styleClass="btn-secondary" style="-fx-padding: 10px 18px;" />
+                </HBox>
+
+                <!-- Scrollable Body for 1366x768 display -->
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+                    <VBox spacing="18">
+
+                        <!-- Chrono-Grid Pill Schedule Section -->
+                        <VBox styleClass="surface-card" spacing="12">
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <FontIcon iconLiteral="mdi2c-clock-fast" iconSize="20" style="-fx-icon-color: -color-primary;" />
+                                <Label text="DAILY CHRONOLOGICAL PILL SCHEDULE" styleClass="card-title" />
+                            </HBox>
+                            <Label text="Take your medications at the recommended daily phases as specified by your physician:" style="-fx-font-size: 12px; -fx-text-fill: -color-text-secondary;" />
+
+                            <!-- 4-Phase Responsive Grid -->
+                            <GridPane fx:id="chronoGrid" hgap="12" vgap="12" />
+                        </VBox>
+
+                        <!-- Prescribed Medications Details List -->
+                        <VBox styleClass="surface-card" spacing="12">
+                            <Label text="PRESCRIBED MEDICINES SUMMARY" styleClass="card-title" />
+                            <VBox fx:id="medicationCardsBox" spacing="10" />
+                        </VBox>
+
+                    </VBox>
+                </ScrollPane>
+
+            </VBox>
+
+        </StackPane>
+
+    </VBox>
+
+</StackPane>

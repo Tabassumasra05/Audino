@@ -24,4 +24,13 @@ public enum MedicationType {
     public String getDefaultUnit() {
         return defaultUnit;
     }
+
+    public String getDefaultDosageHint() {
+        return switch (this) {
+            case TABLET -> "1 tablet";
+            case CAPSULE -> "1 capsule";
+            case LIQUID -> "5 ml";
+            case INJECTION -> "1 vial";
+        };
+    }
 }

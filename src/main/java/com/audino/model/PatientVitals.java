@@ -101,6 +101,10 @@ public class PatientVitals {
         return systolicBp + "/" + diastolicBp + " mmHg";
     }
 
+    public String getBloodPressureString() {
+        return getBpString();
+    }
+
     public Long getId() {
         return id;
     }

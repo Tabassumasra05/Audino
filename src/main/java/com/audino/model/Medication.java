@@ -87,6 +87,13 @@ public abstract class Medication {
         return pricePerUnit.multiply(BigDecimal.valueOf(units)).setScale(2, RoundingMode.HALF_UP);
     }
 
+    public BigDecimal calculateCost(int totalUnits) {
+        if (pricePerUnit == null) {
+            return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        }
+        return pricePerUnit.multiply(BigDecimal.valueOf(totalUnits)).setScale(2, RoundingMode.HALF_UP);
+    }
+
     public Long getId() {
         return id;
     }
@@ -109,6 +116,10 @@ public abstract class Medication {
 
     public MedicationType getType() {
         return type;
+    }
+
+    public String getDosageHint() {
+        return type != null ? type.getDefaultDosageHint() : "1 unit";
     }
 
     public String getStrength() {

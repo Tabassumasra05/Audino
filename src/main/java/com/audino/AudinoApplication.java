@@ -1,5 +1,6 @@
 package com.audino;
 
+import com.audino.ui.navigation.NavigationService;
 import com.audino.util.ConfigurationManager;
 import com.audino.util.DataSeeder;
 import com.audino.util.DatabaseInitializer;
@@ -74,36 +75,17 @@ public class AudinoApplication extends Application {
     public void start(Stage primaryStage) throws Exception {
         logger.info("Starting JavaFX Primary Stage...");
 
-        URL fxmlUrl = getClass().getClassLoader().getResource("fxml/startup.fxml");
-        if (fxmlUrl == null) {
-            throw new IllegalStateException("Cannot find fxml/startup.fxml on classpath");
-        }
-
-        Parent root = FXMLLoader.load(fxmlUrl);
-        mainScene = new Scene(root, 1150, 700);
-
-        // Apply custom clinical CSS design system
-        applyTheme("light.css");
+        NavigationService nav = NavigationService.getInstance();
+        nav.setPrimaryStage(primaryStage);
 
         primaryStage.setTitle("Audino: Intelligent Clinical Decision Support & EMR System");
-        primaryStage.setMinWidth(900);
+        primaryStage.setMinWidth(1000);
         primaryStage.setMinHeight(600);
         primaryStage.setMaximized(true);
-        primaryStage.setScene(mainScene);
 
-        // Wire interactive demo handlers on startup view
-        Button themeToggleBtn = (Button) mainScene.lookup("#themeToggleBtn");
-        if (themeToggleBtn != null) {
-            themeToggleBtn.setOnAction(e -> toggleTheme());
-        }
+        // Switch to the Login screen as the root scene
+        nav.switchRootScene("/fxml/login.fxml", "Sign In");
 
-        Label dbEngineLabel = (Label) mainScene.lookup("#dbEngineLabel");
-        if (dbEngineLabel != null) {
-            boolean embedded = ConfigurationManager.getInstance().isEmbedded();
-            dbEngineLabel.setText(embedded ? "Embedded PostgreSQL (Zero-Setup)" : "External PostgreSQL (localhost:5432)");
-        }
-
-        primaryStage.show();
         logger.info("Audino Stage displayed successfully.");
     }
 

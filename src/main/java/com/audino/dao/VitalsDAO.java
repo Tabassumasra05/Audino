@@ -15,4 +15,8 @@ public interface VitalsDAO {
     Optional<PatientVitals> findLatestByPatientId(Long patientId);
 
     List<PatientVitals> findHistoryByPatientId(Long patientId, int limit);
+
+    default List<PatientVitals> findByPatientId(Long patientId) {
+        return findHistoryByPatientId(patientId, 100);
+    }
 }

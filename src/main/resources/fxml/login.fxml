@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<HBox xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.audino.controller.LoginController"
+      style="-fx-background-color: -color-bg;" prefWidth="1200.0" prefHeight="720.0">
+
+    <!-- Left Brand Panel -->
+    <VBox HBox.hgrow="NEVER" prefWidth="480.0" minWidth="400.0" style="-fx-background-color: linear-gradient(to bottom right, #071720, #0B2533, #0F766E); -fx-padding: 48px;" alignment="CENTER_LEFT" spacing="28">
+
+        <!-- Brand Logo & Name -->
+        <HBox alignment="CENTER_LEFT" spacing="14">
+            <StackPane style="-fx-background-color: #14B8A6; -fx-background-radius: 12px; -fx-pref-width: 48px; -fx-pref-height: 48px;">
+                <FontIcon iconLiteral="mdi2s-shield-cross" iconSize="28" style="-fx-icon-color: #071720;" />
+            </StackPane>
+            <VBox spacing="2">
+                <Label text="AUDINO" style="-fx-font-size: 26px; -fx-font-weight: 800; -fx-text-fill: #FFFFFF; -fx-letter-spacing: 1.5px;" />
+                <Label text="CLINICAL DECISION SUPPORT &amp; EMR" style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-text-fill: #5EEAD4; -fx-letter-spacing: 1px;" />
+            </VBox>
+        </HBox>
+
+        <Label text="Intelligent Outpatient Safety &amp; Prescribing System"
+               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #FFFFFF;" wrapText="true" />
+
+        <Label text="Engineered for university clinical evaluation to eradicate preventable Adverse Drug Events (ADEs) through real-time multi-dimensional safety screening."
+               style="-fx-font-size: 13px; -fx-text-fill: #94A3B8; -fx-line-spacing: 4px;" wrapText="true" />
+
+        <Separator style="-fx-opacity: 0.15;" />
+
+        <!-- Feature Pillars -->
+        <VBox spacing="18">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <StackPane style="-fx-background-color: rgba(20, 184, 166, 0.2); -fx-background-radius: 8px; -fx-pref-width: 32px; -fx-pref-height: 32px;">
+                    <FontIcon iconLiteral="mdi2a-alert-decagram" iconSize="18" style="-fx-icon-color: #2DD4BF;" />
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Zero Unmonitored ADEs" style="-fx-font-weight: bold; -fx-text-fill: #FFFFFF; -fx-font-size: 13px;" />
+                    <Label text="Instant Drug-Drug, Allergy &amp; Condition safety radar" style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" />
+                </VBox>
+            </HBox>
+
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <StackPane style="-fx-background-color: rgba(20, 184, 166, 0.2); -fx-background-radius: 8px; -fx-pref-width: 32px; -fx-pref-height: 32px;">
+                    <FontIcon iconLiteral="mdi2s-shield-lock" iconSize="18" style="-fx-icon-color: #2DD4BF;" />
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Mandatory Clinical Override" style="-fx-font-weight: bold; -fx-text-fill: #FFFFFF; -fx-font-size: 13px;" />
+                    <Label text="Forensic audit logging with required clinical rationale" style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" />
+                </VBox>
+            </HBox>
+
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <StackPane style="-fx-background-color: rgba(20, 184, 166, 0.2); -fx-background-radius: 8px; -fx-pref-width: 32px; -fx-pref-height: 32px;">
+                    <FontIcon iconLiteral="mdi2c-clock-time-four" iconSize="18" style="-fx-icon-color: #2DD4BF;" />
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Chrono-Grid Pill Schedule" style="-fx-font-weight: bold; -fx-text-fill: #FFFFFF; -fx-font-size: 13px;" />
+                    <Label text="4-Phase timeline layout with patient self-service kiosk" style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;" />
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS" />
+
+        <!-- Kiosk Launcher Button -->
+        <VBox spacing="8" style="-fx-background-color: rgba(255, 255, 255, 0.05); -fx-background-radius: 12px; -fx-padding: 16px; -fx-border-color: rgba(255, 255, 255, 0.1); -fx-border-radius: 12px;">
+            <Label text="PATIENT SELF-SERVICE TERMINAL" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #5EEAD4;" />
+            <Label text="Are you a patient checking today's prescription schedule?" style="-fx-font-size: 11px; -fx-text-fill: #CBD5E1;" wrapText="true" />
+            <Button fx:id="kioskBtn" text="Open Patient Kiosk (No Login Required)"
+                    style="-fx-background-color: #14B8A6; -fx-text-fill: #071720; -fx-font-weight: bold; -fx-background-radius: 6px; -fx-padding: 8px 14px; -fx-cursor: hand;" />
+        </VBox>
+    </VBox>
+
+    <!-- Right Login Form Card Area -->
+    <StackPane HBox.hgrow="ALWAYS" alignment="CENTER">
+
+        <VBox fx:id="cardContainer" maxWidth="440.0" spacing="20"
+              style="-fx-background-color: -color-surface; -fx-background-radius: 16px; -fx-padding: 36px; -fx-effect: -shadow-card; -fx-border-color: -color-border; -fx-border-radius: 16px; -fx-border-width: 1px;">
+
+            <!-- Header -->
+            <VBox spacing="6">
+                <Label text="Staff Sign In" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: -color-text;" />
+                <Label text="Enter your clinical credentials to access your portal" style="-fx-font-size: 13px; -fx-text-fill: -color-text-secondary;" />
+            </VBox>
+
+            <!-- Error Banner -->
+            <Label fx:id="errorBanner" wrapText="true"
+                   style="-fx-background-color: -color-critical-soft; -fx-text-fill: -color-critical; -fx-font-size: 12px; -fx-font-weight: 500; -fx-padding: 10px 14px; -fx-background-radius: 8px; -fx-border-color: -color-critical; -fx-border-radius: 8px;" />
+
+            <!-- Username Field -->
+            <VBox spacing="6">
+                <Label text="USERNAME" style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted;" />
+                <HBox alignment="CENTER_LEFT" style="-fx-background-color: -color-surface-alt; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 4px 10px;">
+                    <FontIcon iconLiteral="mdi2a-account" iconSize="18" style="-fx-icon-color: -color-text-muted;" />
+                    <TextField fx:id="usernameField" promptText="e.g. doctor, admin, reception"
+                               style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 13px;" HBox.hgrow="ALWAYS" />
+                </HBox>
+            </VBox>
+
+            <!-- Password Field with Show/Hide and Caps Lock warning -->
+            <VBox spacing="6">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="PASSWORD" style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted;" HBox.hgrow="ALWAYS" />
+                    <Label fx:id="capsLockWarning" text="⚠ CAPS LOCK IS ON" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: -color-warning;" />
+                </HBox>
+                <HBox alignment="CENTER_LEFT" style="-fx-background-color: -color-surface-alt; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 4px 10px;">
+                    <FontIcon iconLiteral="mdi2l-lock" iconSize="18" style="-fx-icon-color: -color-text-muted;" />
+                    <StackPane HBox.hgrow="ALWAYS">
+                        <PasswordField fx:id="passwordField" promptText="Enter your password"
+                                       style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 13px;" />
+                        <TextField fx:id="passwordTextField" promptText="Enter your password" visible="false" managed="false"
+                                   style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 13px;" />
+                    </StackPane>
+                    <Button fx:id="togglePasswordBtn" style="-fx-background-color: transparent; -fx-cursor: hand; -fx-padding: 4px;">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi2e-eye" iconSize="16" style="-fx-icon-color: -color-text-muted;" />
+                        </graphic>
+                    </Button>
+                </HBox>
+            </VBox>
+
+            <!-- Sign In Button -->
+            <Button fx:id="loginBtn" text="Sign In to Clinical Workspace" maxWidth="Infinity"
+                    style="-fx-background-color: -color-primary; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-padding: 12px; -fx-cursor: hand;" />
+
+            <Separator style="-fx-opacity: 0.5;" />
+
+            <!-- Demo Profiles Quick Fill for Evaluator -->
+            <VBox spacing="8">
+                <Label text="DEMO PROFILES (Click to auto-fill)" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted; -fx-alignment: center;" />
+                <HBox spacing="8" alignment="CENTER">
+                    <Button text="Doctor (Dr. Arjun)" onAction="#fillDoctorDemo"
+                            style="-fx-background-color: -color-surface-alt; -fx-border-color: -color-border; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-font-size: 11px; -fx-cursor: hand; -fx-padding: 6px 10px;" />
+                    <Button text="Admin (Dr. Sanjay)" onAction="#fillAdminDemo"
+                            style="-fx-background-color: -color-surface-alt; -fx-border-color: -color-border; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-font-size: 11px; -fx-cursor: hand; -fx-padding: 6px 10px;" />
+                    <Button text="Reception (Neha)" onAction="#fillReceptionistDemo"
+                            style="-fx-background-color: -color-surface-alt; -fx-border-color: -color-border; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-font-size: 11px; -fx-cursor: hand; -fx-padding: 6px 10px;" />
+                </HBox>
+            </VBox>
+
+        </VBox>
+    </StackPane>
+
+</HBox>

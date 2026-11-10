@@ -68,6 +68,10 @@ public class PrescriptionAlert {
         this.acknowledged = true;
     }
 
+    public void acknowledge(String justification, String doctorUsername) {
+        recordOverride(justification, doctorUsername);
+    }
+
     public Long getId() {
         return id;
     }

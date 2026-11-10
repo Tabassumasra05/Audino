@@ -116,6 +116,14 @@ public class PrescriptionService {
         return saved;
     }
 
+    public Prescription savePrescription(Prescription prescription, Patient patient, Doctor doctor)
+            throws CriticalInteractionException, ValidationException {
+        if (patient != null) {
+            prescription.setPatient(patient);
+        }
+        return savePrescription(prescription, doctor);
+    }
+
     public Optional<Prescription> findById(Long id) {
         return prescriptionDAO.findById(id);
     }

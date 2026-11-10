@@ -49,6 +49,12 @@ public class MedicationFactory {
         }
     }
 
+    public static Medication createMedication(Long id, String genericName, String brandName,
+                                              String rxNormCode, MedicationType type, String strength,
+                                              BigDecimal pricePerUnit, List<String> ingredients) {
+        return createMedication(type, id, genericName, brandName, rxNormCode, strength, ingredients, pricePerUnit, LocalDateTime.now());
+    }
+
     public static Medication fromResultSet(ResultSet rs, List<String> ingredients) throws SQLException {
         Long id = rs.getLong("id");
         String genericName = rs.getString("generic_name");

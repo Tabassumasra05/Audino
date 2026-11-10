@@ -88,4 +88,41 @@ public class PillScheduleService {
 
         return new DailyPillSchedule(patName, docName, tokNo, grid, precautions);
     }
+
+    public record PhaseDoseItem(String brandName, String dosage, String mealPrecaution) {}
+
+    public record SchedulePhase(Frequency.DosePhase phase, String phaseTitle, String timeTarget, List<PhaseDoseItem> items) {}
+
+    public List<SchedulePhase> generateTimeline(Prescription prescription) {
+        DailyPillSchedule daily = generateSchedule(prescription);
+        List<SchedulePhase> phases = new ArrayList<>();
+
+        Map<Frequency.DosePhase, String[]> meta = Map.of(
+            Frequency.DosePhase.MORNING, new String[]{"Morning", "08:00 AM"},
+            Frequency.DosePhase.AFTERNOON, new String[]{"Afternoon", "01:00 PM"},
+            Frequency.DosePhase.EVENING, new String[]{"Evening", "06:00 PM"},
+            Frequency.DosePhase.NIGHT, new String[]{"Night", "09:00 PM"},
+            Frequency.DosePhase.AS_NEEDED, new String[]{"As Needed", "SOS"}
+        );
+
+        Frequency.DosePhase[] order = {
+            Frequency.DosePhase.MORNING,
+            Frequency.DosePhase.AFTERNOON,
+            Frequency.DosePhase.EVENING,
+            Frequency.DosePhase.NIGHT,
+            Frequency.DosePhase.AS_NEEDED
+        };
+
+        for (Frequency.DosePhase dp : order) {
+            List<DoseEntry> entries = daily.scheduleGrid().getOrDefault(dp, List.of());
+            List<PhaseDoseItem> items = new ArrayList<>();
+            for (DoseEntry e : entries) {
+                items.add(new PhaseDoseItem(e.medicationName(), e.dosage(), e.instructions()));
+            }
+            String[] m = meta.get(dp);
+            phases.add(new SchedulePhase(dp, m[0], m[1], items));
+        }
+
+        return phases;
+    }
 }

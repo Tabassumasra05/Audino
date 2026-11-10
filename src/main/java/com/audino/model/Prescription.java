@@ -86,6 +86,11 @@ public class Prescription {
         this.totalCost = sum.setScale(2, RoundingMode.HALF_UP);
     }
 
+    public BigDecimal calculateTotalCost() {
+        recalculateTotal();
+        return totalCost;
+    }
+
     /**
      * Evaluates whether there are any active CRITICAL alerts that have not been
      * justified by the physician with a valid override note (>= 15 chars).

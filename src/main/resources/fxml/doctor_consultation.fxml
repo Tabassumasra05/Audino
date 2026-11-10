@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import com.audino.ui.components.SearchField?>
+
+<StackPane fx:id="doctorRootPane" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.audino.controller.DoctorConsultationController"
+           style="-fx-background-color: transparent;">
+
+    <VBox spacing="14">
+
+        <!-- STICKY PATIENT SAFETY BANNER -->
+        <VBox fx:id="bannerContainer" />
+
+        <!-- MAIN ERGONOMIC SPLIT LAYOUT -->
+        <HBox spacing="16" VBox.vgrow="ALWAYS">
+
+            <!-- LEFT DRAWER: LIVE QUEUE -->
+            <VBox prefWidth="300.0" minWidth="260.0" spacing="12" styleClass="surface-card">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="CONSULTATION QUEUE" styleClass="card-title" HBox.hgrow="ALWAYS" />
+                    <Button fx:id="callNextBtn" text="Call Next"
+                            style="-fx-background-color: -color-primary; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px; -fx-background-radius: 6px; -fx-padding: 5px 10px; -fx-cursor: hand;" />
+                </HBox>
+
+                <TableView fx:id="queueTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+                    <columns>
+                        <TableColumn fx:id="queueColToken" text="Token" prefWidth="65.0" />
+                        <TableColumn fx:id="queueColPatient" text="Patient Name" prefWidth="130.0" />
+                        <TableColumn fx:id="queueColStatus" text="Status" prefWidth="85.0" />
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- RIGHT MAIN CLINICAL TABS -->
+            <TabPane tabClosingPolicy="UNAVAILABLE" styleClass="clinical-tab-pane" HBox.hgrow="ALWAYS">
+
+                <!-- TAB 1: CLINICAL OVERVIEW & VITALS TRENDS -->
+                <Tab text="Patient Overview &amp; Vitals">
+                    <graphic>
+                        <FontIcon iconLiteral="mdi2h-heart-pulse" iconSize="16" />
+                    </graphic>
+                    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 14px;">
+                        <VBox spacing="16">
+                            <Label text="VITAL SIGN SPARKLINE TRENDS" styleClass="card-title" />
+                            <HBox fx:id="sparklinesContainer" spacing="14" />
+
+                            <Separator style="-fx-opacity: 0.3;" />
+
+                            <Label text="HISTORICAL VISIT VITALS LOG" styleClass="card-title" />
+                            <TableView fx:id="vitalsTable" prefHeight="260.0" styleClass="data-table">
+                                <columns>
+                                    <TableColumn fx:id="vitalsColDate" text="Recorded Date &amp; Time" prefWidth="180.0" />
+                                    <TableColumn fx:id="vitalsColBp" text="Blood Pressure" prefWidth="130.0" />
+                                    <TableColumn fx:id="vitalsColPulse" text="Pulse" prefWidth="100.0" />
+                                    <TableColumn fx:id="vitalsColSpo2" text="SpO2" prefWidth="100.0" />
+                                    <TableColumn fx:id="vitalsColTemp" text="Temperature" prefWidth="110.0" />
+                                    <TableColumn fx:id="vitalsColBmi" text="BMI &amp; Category" prefWidth="160.0" />
+                                </columns>
+                            </TableView>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
+
+                <!-- TAB 2: ACTIVE PRESCRIBE & SAFETY RADAR -->
+                <Tab text="Prescribe &amp; Safety Radar">
+                    <graphic>
+                        <FontIcon iconLiteral="mdi2s-shield-alert" iconSize="16" />
+                    </graphic>
+                    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 14px;">
+                        <VBox spacing="16">
+
+                            <!-- Top: Search & Formulary Selector -->
+                            <VBox styleClass="surface-card" spacing="10">
+                                <Label text="MEDICATION FORMULARY LOOKUP" styleClass="card-title" />
+
+                                <SearchField fx:id="medSearchField" promptText="Type brand or generic drug name (keyboard-first with typo autocorrect)..." />
+
+                                <!-- Typo Autocorrect Banner -->
+                                <HBox fx:id="didYouMeanContainer" alignment="CENTER_LEFT" spacing="8"
+                                      style="-fx-background-color: -color-primary-soft; -fx-padding: 6px 12px; -fx-background-radius: 6px;">
+                                    <FontIcon iconLiteral="mdi2i-information" iconSize="16" style="-fx-icon-color: -color-primary;" />
+                                    <Label text="Did you mean: " style="-fx-font-size: 12px; -fx-text-fill: -color-text;" />
+                                    <Label fx:id="didYouMeanLabel" text="Amoxicillin" style="-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: -color-primary; -fx-underline: true; -fx-cursor: hand;" onMouseClicked="#applyAutocorrectSuggestion" />
+                                    <Label text="? (Click to apply)" style="-fx-font-size: 11px; -fx-text-fill: -color-text-secondary;" />
+                                </HBox>
+
+                                <TableView fx:id="formularyTable" prefHeight="130.0" styleClass="data-table">
+                                    <columns>
+                                        <TableColumn fx:id="formColBrand" text="Brand Name" prefWidth="150.0" />
+                                        <TableColumn fx:id="formColGeneric" text="Generic Molecule" prefWidth="150.0" />
+                                        <TableColumn fx:id="formColType" text="Type" prefWidth="90.0" />
+                                        <TableColumn fx:id="formColStrength" text="Strength" prefWidth="90.0" />
+                                        <TableColumn fx:id="formColPrice" text="Unit Price" prefWidth="90.0" />
+                                    </columns>
+                                </TableView>
+
+                                <!-- Dose, Frequency, Duration Builder Row -->
+                                <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: -color-surface-alt; -fx-padding: 10px; -fx-background-radius: 8px;">
+                                    <VBox spacing="2">
+                                        <Label text="Dosage:" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted;" />
+                                        <TextField fx:id="dosageField" promptText="e.g. 1 tablet" prefWidth="110.0" />
+                                    </VBox>
+
+                                    <VBox spacing="2">
+                                        <Label text="Frequency:" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted;" />
+                                        <ComboBox fx:id="frequencyCombo" prefWidth="180.0" />
+                                    </VBox>
+
+                                    <VBox spacing="2">
+                                        <Label text="Days:" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted;" />
+                                        <TextField fx:id="durationField" text="5" prefWidth="65.0" />
+                                    </VBox>
+
+                                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                        <Label text="Instructions &amp; Meal Precautions:" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted;" />
+                                        <TextField fx:id="instructionsField" promptText="e.g. Take after meals with water" />
+                                    </VBox>
+
+                                    <Button fx:id="addItemBtn" text="+ Add Drug" styleClass="btn-primary" style="-fx-padding: 10px 16px;" />
+                                </HBox>
+                            </VBox>
+
+                            <!-- Center: Current Prescription Items Table -->
+                            <VBox styleClass="surface-card" spacing="10">
+                                <HBox alignment="CENTER_LEFT">
+                                    <Label text="CURRENT CONSULTATION PRESCRIPTION" styleClass="card-title" HBox.hgrow="ALWAYS" />
+                                    <Label text="Total Cost: " style="-fx-font-size: 14px; -fx-font-weight: 500;" />
+                                    <Label fx:id="totalCostLabel" text="₹0.00" style="-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: -color-primary;" />
+                                </HBox>
+
+                                <TableView fx:id="rxItemsTable" prefHeight="140.0" styleClass="data-table">
+                                    <columns>
+                                        <TableColumn fx:id="rxColMedName" text="Medication" prefWidth="180.0" />
+                                        <TableColumn fx:id="rxColDosage" text="Dosage" prefWidth="100.0" />
+                                        <TableColumn fx:id="rxColFrequency" text="Frequency" prefWidth="160.0" />
+                                        <TableColumn fx:id="rxColDuration" text="Duration" prefWidth="90.0" />
+                                        <TableColumn fx:id="rxColUnits" text="Total Units" prefWidth="85.0" />
+                                        <TableColumn fx:id="rxColCost" text="Line Cost" prefWidth="95.0" />
+                                        <TableColumn fx:id="rxColAction" text="" prefWidth="45.0" />
+                                    </columns>
+                                </TableView>
+                            </VBox>
+
+                            <!-- Bottom: Live CDS Safety Radar & Blocking Banner -->
+                            <VBox fx:id="safetyRadarBox" styleClass="surface-card" spacing="12">
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <FontIcon iconLiteral="mdi2r-radar" iconSize="20" style="-fx-icon-color: -color-primary;" />
+                                    <Label text="LIVE CLINICAL DECISION SUPPORT SAFETY RADAR" styleClass="card-title" HBox.hgrow="ALWAYS" />
+                                    <Chip text="ACTIVE SCREENING" variant="PRIMARY" iconLiteral="mdi2c-check" />
+                                </HBox>
+
+                                <!-- Blocking Alert Banner (Visible when unacknowledged critical alert exists) -->
+                                <HBox fx:id="blockingBanner" alignment="CENTER_LEFT" spacing="12" visible="false" managed="false"
+                                      style="-fx-background-color: #FEE2E2; -fx-border-color: #DC2626; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 12px 16px;">
+                                    <FontIcon iconLiteral="mdi2a-alert-circle" iconSize="24" style="-fx-icon-color: #DC2626;" />
+                                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                        <Label text="CRITICAL SAFETY CONTRAINDICATION DETECTED"
+                                               style="-fx-font-weight: 800; -fx-font-size: 13px; -fx-text-fill: #991B1B;" />
+                                        <Label fx:id="blockingBannerLabel"
+                                               text="Prescription approval is locked. You must provide a formal clinical justification (≥ 15 characters) before this medication can be prescribed."
+                                               style="-fx-font-size: 11px; -fx-text-fill: #7F1D1D;" wrapText="true" />
+                                    </VBox>
+                                </HBox>
+
+                                <!-- Alert Cards Container -->
+                                <VBox fx:id="alertsListContainer" spacing="8" />
+
+                                <!-- Prescription Actions -->
+                                <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 10px 0 0 0;">
+                                    <Button fx:id="downloadPdfBtn" text="Export / Download PDF" disable="true" styleClass="btn-secondary" />
+                                    <Button fx:id="approveRxBtn" text="Approve &amp; Sign Prescription" disable="true"
+                                            style="-fx-background-color: -color-primary; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-padding: 10px 20px; -fx-cursor: hand;" />
+                                </HBox>
+                            </VBox>
+
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
+
+                <!-- TAB 3: PAST CONSULTATION HISTORY -->
+                <Tab text="Consultation History">
+                    <graphic>
+                        <FontIcon iconLiteral="mdi2h-history" iconSize="16" />
+                    </graphic>
+                    <VBox spacing="12" style="-fx-padding: 14px;">
+                        <Label text="PREVIOUS OUTPATIENT PRESCRIPTIONS &amp; VISITS" styleClass="card-title" />
+                        <TableView fx:id="historyTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+                            <columns>
+                                <TableColumn fx:id="histColDate" text="Date &amp; Time" prefWidth="180.0" />
+                                <TableColumn fx:id="histColDoctor" text="Consulting Doctor" prefWidth="180.0" />
+                                <TableColumn fx:id="histColItems" text="Medications Dispensed" prefWidth="240.0" />
+                                <TableColumn fx:id="histColCost" text="Total Billed" prefWidth="120.0" />
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </Tab>
+
+            </TabPane>
+
+        </HBox>
+
+    </VBox>
+
+</StackPane>
