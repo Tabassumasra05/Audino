@@ -6,4 +6,5 @@ target/
 .vscode/
 data/pg-data/
 data/
+dependency-reduced-pom.xml
 *.exe
