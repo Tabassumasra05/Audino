@@ -12,6 +12,10 @@ public class Receptionist extends Account {
         super(id, username, passwordHash, fullName, Role.RECEPTIONIST, active, createdAt);
     }
 
+    public Receptionist(Long id, String username, String passwordHash, String fullName, boolean active) {
+        this(id, username, passwordHash, fullName, active, LocalDateTime.now());
+    }
+
     public Receptionist(String username, String passwordHash, String fullName) {
         super(null, username, passwordHash, fullName, Role.RECEPTIONIST, true, LocalDateTime.now());
     }

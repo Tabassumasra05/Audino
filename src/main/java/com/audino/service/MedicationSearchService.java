@@ -128,15 +128,27 @@ public class MedicationSearchService {
         double highestSimilarity = 0.0;
 
         for (Medication med : index) {
-            // Test generic name
-            double simGeneric = computeCombinedSimilarity(input, med.getGenericName().toLowerCase());
+            // Test generic name and tokens
+            String genLower = med.getGenericName().toLowerCase();
+            double simGeneric = computeCombinedSimilarity(input, genLower);
+            for (String part : genLower.split("\\s+")) {
+                if (part.length() >= 3) {
+                    simGeneric = Math.max(simGeneric, computeCombinedSimilarity(input, part));
+                }
+            }
             if (simGeneric > highestSimilarity) {
                 highestSimilarity = simGeneric;
                 bestMatch = med.getGenericName();
             }
 
-            // Test brand name
-            double simBrand = computeCombinedSimilarity(input, med.getBrandName().toLowerCase());
+            // Test brand name and tokens (e.g. "brufen" in "Brufen 400")
+            String brandLower = med.getBrandName().toLowerCase();
+            double simBrand = computeCombinedSimilarity(input, brandLower);
+            for (String part : brandLower.split("\\s+")) {
+                if (part.length() >= 3) {
+                    simBrand = Math.max(simBrand, computeCombinedSimilarity(input, part));
+                }
+            }
             if (simBrand > highestSimilarity) {
                 highestSimilarity = simBrand;
                 bestMatch = med.getBrandName();

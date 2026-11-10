@@ -51,4 +51,8 @@ public class SessionManager {
     public synchronized void logout() {
         this.currentAccount = null;
     }
+
+    public synchronized void clearSession() {
+        logout();
+    }
 }

@@ -41,6 +41,12 @@ public class Token {
         this.completedAt = completedAt;
     }
 
+    public Token(Long id, String tokenNo, LocalDate tokenDate, Long patientId,
+                 String doctorUsername, TokenStatus status) {
+        this(id, tokenNo, tokenDate, patientId, doctorUsername, status,
+             LocalDateTime.now(), null, null);
+    }
+
     public Token(String tokenNo, Long patientId, String doctorUsername) {
         this(null, tokenNo, LocalDate.now(), patientId, doctorUsername, TokenStatus.WAITING,
              LocalDateTime.now(), null, null);

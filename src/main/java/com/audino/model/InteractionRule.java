@@ -30,6 +30,11 @@ public class InteractionRule {
         this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
     }
 
+    public InteractionRule(Long id, AlertType type, String keyword1, String keyword2,
+                           AlertLevel severity, String description, String recommendation) {
+        this(id, type, keyword1, keyword2, severity, description, recommendation, LocalDateTime.now());
+    }
+
     public InteractionRule(AlertType type, String keyword1, String keyword2,
                            AlertLevel severity, String description, String recommendation) {
         this(null, type, keyword1, keyword2, severity, description, recommendation, LocalDateTime.now());

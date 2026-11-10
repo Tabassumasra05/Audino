@@ -284,14 +284,23 @@ public class PatientDAOJdbc implements PatientDAO {
     }
 
     private String generateNextPatientId(Connection conn) throws SQLException {
-        String sql = "SELECT MAX(id) FROM patients";
+        String sql = "SELECT patient_id FROM patients WHERE patient_id LIKE 'P-%'";
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            long maxId = 1000;
-            if (rs.next()) {
-                maxId = Math.max(maxId, rs.getLong(1));
+            int maxNum = 1000;
+            while (rs.next()) {
+                String pid = rs.getString(1);
+                if (pid != null && pid.startsWith("P-")) {
+                    try {
+                        int num = Integer.parseInt(pid.substring(2));
+                        if (num > maxNum) {
+                            maxNum = num;
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
             }
-            return "P-" + (maxId + 1);
+            return "P-" + (maxNum + 1);
         }
     }
 

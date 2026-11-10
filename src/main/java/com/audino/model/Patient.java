@@ -53,6 +53,11 @@ public class Patient {
         this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
     }
 
+    public Patient(Long id, String patientId, String firstName, String lastName,
+                   LocalDate dateOfBirth, Gender gender, String phone, String address) {
+        this(id, patientId, firstName, lastName, dateOfBirth, gender, phone, address, null, null, LocalDateTime.now());
+    }
+
     public Patient(String firstName, String lastName, LocalDate dateOfBirth, Gender gender, String phone, String address) {
         this(null, null, firstName, lastName, dateOfBirth, gender, phone, address, null, null, LocalDateTime.now());
     }
@@ -80,10 +85,24 @@ public class Patient {
         }
     }
 
+    public void addAllergy(PatientAllergy allergy) {
+        if (allergy != null) {
+            allergy.setPatientId(this.id);
+            this.allergies.add(allergy);
+        }
+    }
+
     // OOM: Composition – Patient creates and owns its chronic condition records
     public void addCondition(String conditionName, LocalDate diagnosedDate) {
         if (conditionName != null && !conditionName.isBlank()) {
             PatientCondition condition = new PatientCondition(conditionName.trim(), diagnosedDate);
+            condition.setPatientId(this.id);
+            this.conditions.add(condition);
+        }
+    }
+
+    public void addCondition(PatientCondition condition) {
+        if (condition != null) {
             condition.setPatientId(this.id);
             this.conditions.add(condition);
         }

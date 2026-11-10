@@ -21,6 +21,11 @@ public class Doctor extends Account {
         this.registrationNumber = Objects.requireNonNull(registrationNumber, "Registration number must not be null");
     }
 
+    public Doctor(Long id, String username, String passwordHash, String fullName,
+                  boolean active, String specialization, String registrationNumber) {
+        this(id, username, passwordHash, fullName, specialization, registrationNumber, active, LocalDateTime.now());
+    }
+
     public Doctor(String username, String passwordHash, String fullName,
                   String specialization, String registrationNumber) {
         super(null, username, passwordHash, fullName, Role.DOCTOR, true, LocalDateTime.now());
