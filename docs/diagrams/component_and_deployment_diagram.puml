@@ -1,0 +1,112 @@
+@startuml component_and_deployment_diagram
+title Audino EMR - Component & Physical Deployment Topology
+skinparam defaultFontName "Inter"
+skinparam componentStyle uml2
+
+node "Clinic Workstation / Terminal" as Workstation {
+    artifact "Audino FAT JAR / JavaFX App" {
+        package "Presentation Tier (JavaFX 19)" {
+            [FXML Views & Application CSS] as Views
+            [JavaFX Controllers] as Controllers
+            [Custom UI Components\n(StatCard, Sparkline, Stepper, etc.)] as Components
+            [Navigation & Theme Manager] as NavMgr
+            
+            Views ..> Controllers
+            Controllers ..> Components
+            Controllers ..> NavMgr
+        }
+
+        package "Business & Domain Tier" {
+            [AuthService] as AuthService
+            [QueueService (QueueSubject)] as QueueService
+            [PrescriptionService] as PrescService
+            [PillScheduleService] as PillService
+            [PrescriptionPdfService] as PdfService
+            [AuditService] as AuditService
+            
+            package "Clinical Decision Support Engine" {
+                [SafetyEngine] as SafetyEngine
+                interface "InteractionStrategy" as IStrategy
+                [DrugDrugStrategy] as DDS
+                [DrugAllergyStrategy] as DAS
+                [DrugConditionStrategy] as DCS
+                [DuplicateTherapyStrategy] as DTS
+                
+                SafetyEngine --> IStrategy
+                IStrategy <|.. DDS
+                IStrategy <|.. DAS
+                IStrategy <|.. DCS
+                IStrategy <|.. DTS
+            }
+            
+            Controllers --> AuthService
+            Controllers --> QueueService
+            Controllers --> PrescService
+            Controllers --> PdfService
+            PrescService --> SafetyEngine
+            PrescService --> PillService
+            PrescService --> AuditService
+        }
+
+        package "Data Access Tier (DAO Pattern)" {
+            interface "AccountDAO" as IAccountDAO
+            interface "PatientDAO" as IPatientDAO
+            interface "MedicationDAO" as IMedDAO
+            interface "PrescriptionDAO" as IPrescDAO
+            interface "TokenDAO" as ITokenDAO
+            interface "InteractionRuleDAO" as IRuleDAO
+            
+            [AccountDAOJdbc] as AccountDAOJdbc
+            [PatientDAOJdbc] as PatientDAOJdbc
+            [MedicationDAOJdbc] as MedDAOJdbc
+            [PrescriptionDAOJdbc] as PrescDAOJdbc
+            [TokenDAOJdbc] as TokenDAOJdbc
+            [InteractionRuleDAOJdbc] as RuleDAOJdbc
+            
+            IAccountDAO <|.. AccountDAOJdbc
+            IPatientDAO <|.. PatientDAOJdbc
+            IMedDAO <|.. MedDAOJdbc
+            IPrescDAO <|.. PrescDAOJdbc
+            ITokenDAO <|.. TokenDAOJdbc
+            IRuleDAO <|.. RuleDAOJdbc
+            
+            PrescService --> IPrescDAO
+            SafetyEngine --> IRuleDAO
+            QueueService --> ITokenDAO
+            AuthService --> IAccountDAO
+        }
+
+        package "Infrastructure & Connection Pool" {
+            [ConfigurationManager (Singleton)] as ConfigMgr
+            [HikariCP DataSource Pool] as HikariPool
+            
+            AccountDAOJdbc --> HikariPool
+            PatientDAOJdbc --> HikariPool
+            MedDAOJdbc --> HikariPool
+            PrescDAOJdbc --> HikariPool
+            TokenDAOJdbc --> HikariPool
+            RuleDAOJdbc --> HikariPool
+            ConfigMgr --> HikariPool
+        }
+    }
+}
+
+node "Local / Network Storage" as Storage {
+    folder "./data/pg-data" as EmbeddedData
+    folder "./exports/prescriptions" as PdfExports
+    file "application.properties" as AppProps
+    
+    PdfService --> PdfExports : generates .pdf
+    ConfigMgr ..> AppProps : reads config
+}
+
+cloud "Database Deployment Layer" {
+    database "PostgreSQL 15 (Active Instance)\n[Port 5432]" as ExternalPG
+    database "Embedded PostgreSQL Daemon\n(io.zonky.test:embedded-postgres)\n[Auto-fallback]" as EmbeddedPG
+    
+    HikariPool --> ExternalPG : "TCP/IP (if running)"
+    HikariPool --> EmbeddedPG : "Loopback Socket (fallback)"
+    EmbeddedPG --> EmbeddedData : persists data
+}
+
+@enduml

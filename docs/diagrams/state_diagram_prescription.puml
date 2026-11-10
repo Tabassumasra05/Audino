@@ -1,0 +1,52 @@
+@startuml state_diagram_prescription
+title State Machine Diagram: Clinical Prescription Lifecycle
+skinparam defaultFontName "Inter"
+skinparam state {
+    BackgroundColor #F8FAFC
+    BorderColor #0F766E
+    FontColor #0F172A
+    ArrowColor #0F766E
+}
+
+[*] --> DRAFT : createPrescription()\n[Associated with Patient & Token]
+
+state DRAFT {
+    DRAFT : Items added, modified, or removed
+    DRAFT : Real-time Safety Radar executing
+    DRAFT : Dynamic pricing recalculating
+    
+    state "Evaluating Safety" as EvalSafety
+    state "Critical Alert Blocking" as CritBlock
+    state "Ready for Approval" as Ready
+    
+    [*] --> EvalSafety
+    EvalSafety --> CritBlock : Critical alert detected\n[requires justification note >= 15 chars]
+    CritBlock --> Ready : Critical overridden OR drug removed
+    EvalSafety --> Ready : No critical alerts detected
+}
+
+DRAFT --> APPROVED : approveAndSave() /\n[Guard: No unjustified criticals],\n[Prescriber = logged-in doctor],\napproved_at = CURRENT_TIMESTAMP
+
+state APPROVED {
+    APPROVED : Immutable legal document
+    APPROVED : Printed with Doctor Reg Number
+    APPROVED : Renderable at Patient Kiosk
+}
+
+DRAFT --> CANCELLED : cancelPrescription() /\n[Consultation discarded or abandoned]
+
+state CANCELLED {
+    CANCELLED : Discarded clinical draft
+}
+
+APPROVED --> [*]
+CANCELLED --> [*]
+
+note bottom of APPROVED
+    <b>Integrity Invariants:</b>
+    * Cannot edit items once APPROVED.
+    * Persisted atomically with items, alerts, and audit log.
+    * Only APPROVED prescriptions generate patient Kiosk pill schedules.
+end note
+
+@enduml

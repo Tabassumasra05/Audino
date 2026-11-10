@@ -1,0 +1,175 @@
+@startuml er_diagram
+title Audino EMR - Relational Database Entity-Relationship Diagram
+skinparam defaultFontName "Inter"
+skinparam defaultFontSize 11
+skinparam linetype ortho
+
+entity "accounts" as accounts {
+    * id : BIGSERIAL <<PK>>
+    --
+    * username : VARCHAR(50) <<UNIQUE>>
+    * password_hash : VARCHAR(100)
+    * full_name : VARCHAR(100)
+    * role : VARCHAR(20) <<CHECK>>
+    specialization : VARCHAR(100)
+    registration_no : VARCHAR(50)
+    * active : BOOLEAN DEFAULT TRUE
+    * created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "patients" as patients {
+    * id : BIGSERIAL <<PK>>
+    --
+    * patient_id : VARCHAR(20) <<UNIQUE>>
+    * first_name : VARCHAR(50)
+    * last_name : VARCHAR(50)
+    * date_of_birth : DATE
+    * gender : VARCHAR(10) <<CHECK>>
+    * phone : VARCHAR(15)
+    address : TEXT
+    * created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "patient_allergies" as patient_allergies {
+    * id : BIGSERIAL <<PK>>
+    --
+    * patient_id : BIGINT <<FK>>
+    * allergen : VARCHAR(100)
+    severity : VARCHAR(20)
+    * created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "patient_conditions" as patient_conditions {
+    * id : BIGSERIAL <<PK>>
+    --
+    * patient_id : BIGINT <<FK>>
+    * condition_name : VARCHAR(100)
+    diagnosed_date : DATE
+    * created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "patient_vitals" as patient_vitals {
+    * id : BIGSERIAL <<PK>>
+    --
+    * patient_id : BIGINT <<FK>>
+    * recorded_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    * height_cm : NUMERIC(5,2)
+    * weight_kg : NUMERIC(5,2)
+    * systolic_bp : INT
+    * diastolic_bp : INT
+    * pulse_bpm : INT
+    * temperature_c : NUMERIC(4,2)
+    * spo2_percent : INT
+}
+
+entity "medications" as medications {
+    * id : BIGSERIAL <<PK>>
+    --
+    * generic_name : VARCHAR(100)
+    * brand_name : VARCHAR(100)
+    rxnorm_code : VARCHAR(20)
+    * type : VARCHAR(20) <<CHECK>>
+    * strength : VARCHAR(50)
+    price_per_unit : NUMERIC(10,2)
+    * created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "medication_ingredients" as medication_ingredients {
+    * id : BIGSERIAL <<PK>>
+    --
+    * medication_id : BIGINT <<FK>>
+    * ingredient_name : VARCHAR(100)
+}
+
+entity "interaction_rules" as interaction_rules {
+    * id : BIGSERIAL <<PK>>
+    --
+    * type : VARCHAR(30) <<CHECK>>
+    * keyword1 : VARCHAR(100)
+    * keyword2 : VARCHAR(100)
+    * severity : VARCHAR(20) <<CHECK>>
+    * description : TEXT
+    recommendation : TEXT
+    * created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "tokens" as tokens {
+    * id : BIGSERIAL <<PK>>
+    --
+    * token_no : VARCHAR(10)
+    * token_date : DATE
+    * patient_id : BIGINT <<FK>>
+    doctor_username : VARCHAR(50) <<FK>>
+    * status : VARCHAR(20) <<CHECK>>
+    * issued_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    called_at : TIMESTAMP
+    completed_at : TIMESTAMP
+}
+
+entity "prescriptions" as prescriptions {
+    * id : BIGSERIAL <<PK>>
+    --
+    * patient_id : BIGINT <<FK>>
+    * doctor_username : VARCHAR(50) <<FK>>
+    * token_id : BIGINT <<FK>>
+    * status : VARCHAR(20) <<CHECK>>
+    * total_cost : NUMERIC(10,2) DEFAULT 0.00
+    * created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "prescription_items" as prescription_items {
+    * id : BIGSERIAL <<PK>>
+    --
+    * prescription_id : BIGINT <<FK, ON DELETE CASCADE>>
+    * medication_id : BIGINT <<FK>>
+    * dosage : VARCHAR(50)
+    * frequency : VARCHAR(30) <<CHECK>>
+    * duration_days : INT
+    instructions : VARCHAR(100)
+    * unit_cost : NUMERIC(10,2)
+    * total_units : INT
+    * line_cost : NUMERIC(10,2)
+}
+
+entity "prescription_alerts" as prescription_alerts {
+    * id : BIGSERIAL <<PK>>
+    --
+    * prescription_id : BIGINT <<FK, ON DELETE CASCADE>>
+    * level : VARCHAR(20) <<CHECK>>
+    * type : VARCHAR(30) <<CHECK>>
+    * message : TEXT
+    * acknowledged : BOOLEAN DEFAULT FALSE
+    override_note : TEXT
+    overridden_by : VARCHAR(50)
+    overridden_at : TIMESTAMP
+}
+
+entity "audit_logs" as audit_logs {
+    * id : BIGSERIAL <<PK>>
+    --
+    * timestamp : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    * operator_username : VARCHAR(50)
+    * operation_type : VARCHAR(50)
+    * entity_type : VARCHAR(50)
+    entity_id : VARCHAR(50)
+    details : TEXT
+}
+
+' Relationships with proper multiplicities
+patients ||--o{ patient_allergies : "has (Cascade)"
+patients ||--o{ patient_conditions : "has (Cascade)"
+patients ||--o{ patient_vitals : "records"
+patients ||--o{ tokens : "receives"
+patients ||--o{ prescriptions : "prescribed for"
+
+accounts ||--o{ tokens : "handles"
+accounts ||--o{ prescriptions : "authors"
+
+medications ||--o{ medication_ingredients : "contains (Cascade)"
+medications ||--o{ prescription_items : "dispensed as"
+
+prescriptions ||--|{ prescription_items : "owns (Cascade)"
+prescriptions ||--o{ prescription_alerts : "records (Cascade)"
+tokens ||--o| prescriptions : "links"
+
+@enduml

@@ -1,0 +1,90 @@
+@startuml sequence_diagram_prescription_safety_override
+title Sequence Diagram 1: Prescribing Conflict Detection, Override Justification, and Atomic Save
+autonumber
+skinparam defaultFontName "Inter"
+skinparam shadowing false
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor Doctor
+boundary "DoctorConsultationView\n(Prescription Pad)" as View
+control "PrescriptionController" as Controller
+control "SafetyEngine" as SafetyEngine
+entity "DrugDrugStrategy" as Strategy
+entity "AlertFactory" as AlertFactory
+control "PrescriptionService" as PrescService
+database "PostgreSQL DB\n(Transaction)" as DB
+control "AuditService" as AuditService
+
+== Step 1: Doctor Prescribes Interacting Drug (Warfarin + Ibuprofen) ==
+Doctor -> View : Inputs 'Warfarin 5mg' & clicks 'Add Item'
+View -> Controller : handleAddItem(medication, dosage, frequency)
+Controller -> Controller : prescription.addItem(newItem) // Existing item: Ibuprofen
+
+== Step 2: Asynchronous Safety Engine Evaluation ==
+Controller -> SafetyEngine : evaluate(prescription, patient)
+activate SafetyEngine
+
+loop for each registered InteractionStrategy
+    SafetyEngine -> Strategy : check(items, patient, activeRules)
+    activate Strategy
+    Strategy -> Strategy : matchKeywords("Warfarin", "Ibuprofen")
+    Strategy --> SafetyEngine : return [PrescriptionAlert(CRITICAL, "Warfarin + Ibuprofen: Risk of severe hemorrhage")]
+    deactivate Strategy
+end
+
+SafetyEngine --> Controller : return List<PrescriptionAlert>
+deactivate SafetyEngine
+
+Controller -> AlertFactory : createAlertCard(criticalAlert)
+activate AlertFactory
+AlertFactory --> Controller : return AlertCard (Red Badge, Mandatory Override)
+deactivate AlertFactory
+
+Controller -> View : renderSafetyRadar(alerts)\nrenderBlockingBanner("1 Critical Alert requires resolution")
+View -> View : disableSaveButton(true)
+
+== Step 3: Clinical Override Protocol ==
+Doctor -> View : Clicks 'Override' on Critical Alert Card
+View -> Controller : openOverrideDialog(criticalAlert)
+Doctor -> View : Enters Justification Note: "Daily INR monitored; short-term trauma use" (>= 15 chars)
+Doctor -> View : Confirms Override
+View -> Controller : handleConfirmOverride(alertId, justificationNote)
+
+Controller -> Controller : alert.setOverrideNote(justificationNote)\nalert.setOverriddenBy(doctor.getUsername())\nalert.setAcknowledged(true)
+Controller -> View : updateSafetyRadar()\nclearBlockingBanner()\nenableSaveButton(true)
+
+== Step 4: Atomic Persistence & Forensic Audit ==
+Doctor -> View : Clicks 'Approve & Save' (Ctrl+S)
+View -> Controller : handleApprovePrescription()
+Controller -> PrescService : savePrescription(prescription, doctor)
+activate PrescService
+
+PrescService -> PrescService : validateNoUnjustifiedCriticals(prescription)
+note right of PrescService: Checks all CRITICAL alerts have valid override note (>= 15 chars)
+
+PrescService -> DB : beginTransaction()
+activate DB
+PrescService -> DB : INSERT INTO prescriptions (...)
+PrescService -> DB : INSERT INTO prescription_items (...) [Cascade / Batch]
+PrescService -> DB : INSERT INTO prescription_alerts (...) [Includes override note & doctor]
+PrescService -> DB : UPDATE tokens SET status = 'IN_CONSULTATION' WHERE id = ...
+PrescService -> DB : commitTransaction()
+deactivate DB
+
+PrescService -> AuditService : logCriticalOverride(doctor, alert, justificationNote)
+activate AuditService
+AuditService -> DB : INSERT INTO audit_logs (CRITICAL_OVERRIDE, ...)
+deactivate AuditService
+
+PrescService -> AuditService : logPrescriptionSaved(doctor, prescription.getId())
+activate AuditService
+AuditService -> DB : INSERT INTO audit_logs (PRESCRIPTION_APPROVED, ...)
+deactivate AuditService
+
+PrescService --> Controller : return savedPrescription
+deactivate PrescService
+
+Controller -> View : showSuccessToast("Prescription approved & saved")\nupdateUiState(APPROVED)
+
+@enduml

@@ -1,0 +1,327 @@
+@startuml class_diagram
+title Audino EMR - Comprehensive Object-Oriented Class Diagram
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Inter"
+skinparam defaultFontSize 11
+skinparam linetype ortho
+
+package "com.audino.model (Domain Model)" {
+    abstract class Account <<abstract>> {
+        - id : Long
+        - username : String
+        - passwordHash : String
+        - fullName : String
+        - role : Role
+        - active : boolean
+        - createdAt : LocalDateTime
+        + {abstract} getDashboardFxml() : String
+        + {abstract} getPermissions() : List<String>
+        + isActive() : boolean
+        + setActive(active : boolean) : void
+        + getUsername() : String
+        + getFullName() : String
+    }
+
+    class Admin {
+        + getDashboardFxml() : String
+        + getPermissions() : List<String>
+    }
+
+    class Doctor {
+        - specialization : String
+        - registrationNumber : String
+        + getDashboardFxml() : String
+        + getPermissions() : List<String>
+        + getSpecialization() : String
+        + getRegistrationNumber() : String
+    }
+
+    class Receptionist {
+        + getDashboardFxml() : String
+        + getPermissions() : List<String>
+    }
+
+    Account <|-- Admin
+    Account <|-- Doctor
+    Account <|-- Receptionist
+
+    abstract class Medication <<abstract>> {
+        - id : Long
+        - genericName : String
+        - brandName : String
+        - rxNormCode : String
+        - type : MedicationType
+        - strength : String
+        - ingredients : List<String>
+        - pricePerUnit : BigDecimal
+        + {abstract} isValidDosage(dosage : String) : boolean
+        + {abstract} getUnitLabel() : String
+        + {abstract} calculateUnits(dosage : String, timesPerDay : int, days : int) : int
+        + calculateCost(dosage : String, timesPerDay : int, days : int) : BigDecimal
+    }
+
+    class TabletMedication {
+        + isValidDosage(dosage : String) : boolean
+        + getUnitLabel() : String
+        + calculateUnits(dosage : String, timesPerDay : int, days : int) : int
+    }
+
+    class CapsuleMedication {
+        + isValidDosage(dosage : String) : boolean
+        + getUnitLabel() : String
+        + calculateUnits(dosage : String, timesPerDay : int, days : int) : int
+    }
+
+    class LiquidMedication {
+        + isValidDosage(dosage : String) : boolean
+        + getUnitLabel() : String
+        + calculateUnits(dosage : String, timesPerDay : int, days : int) : int
+    }
+
+    class InjectionMedication {
+        + isValidDosage(dosage : String) : boolean
+        + getUnitLabel() : String
+        + calculateUnits(dosage : String, timesPerDay : int, days : int) : int
+    }
+
+    Medication <|-- TabletMedication
+    Medication <|-- CapsuleMedication
+    Medication <|-- LiquidMedication
+    Medication <|-- InjectionMedication
+
+    class Patient {
+        - id : Long
+        - patientId : String
+        - firstName : String
+        - lastName : String
+        - dateOfBirth : LocalDate
+        - gender : Gender
+        - phone : String
+        - address : String
+        - allergies : List<PatientAllergy>
+        - conditions : List<PatientCondition>
+        + getFullName() : String
+        + getAge() : int
+        + addAllergy(allergen : String, severity : String) : void
+        + addCondition(conditionName : String, diagnosedDate : LocalDate) : void
+    }
+
+    class PatientAllergy {
+        - id : Long
+        - allergen : String
+        - severity : String
+    }
+
+    class PatientCondition {
+        - id : Long
+        - conditionName : String
+        - diagnosedDate : LocalDate
+    }
+
+    class PatientVitals {
+        - id : Long
+        - patientId : Long
+        - recordedAt : LocalDateTime
+        - heightCm : double
+        - weightKg : double
+        - systolicBp : int
+        - diastolicBp : int
+        - pulseBpm : int
+        - temperatureC : double
+        - spo2Percent : int
+        + calculateBmi() : double
+        + getBmiCategory() : String
+    }
+
+    class Token {
+        - id : Long
+        - tokenNo : String
+        - tokenDate : LocalDate
+        - patientId : Long
+        - doctorUsername : String
+        - status : TokenStatus
+        - issuedAt : LocalDateTime
+        - calledAt : LocalDateTime
+        - completedAt : LocalDateTime
+        + transitionTo(newStatus : TokenStatus) : void
+    }
+
+    class Prescription {
+        - id : Long
+        - patientId : Long
+        - doctorUsername : String
+        - tokenId : Long
+        - status : PrescriptionStatus
+        - totalCost : BigDecimal
+        - createdAt : LocalDateTime
+        - items : List<PrescriptionItem>
+        - alerts : List<PrescriptionAlert>
+        + addItem(item : PrescriptionItem) : void
+        + removeItem(item : PrescriptionItem) : void
+        + recalculateTotal() : void
+        + hasUnjustifiedCriticalAlerts() : boolean
+    }
+
+    class PrescriptionItem {
+        - id : Long
+        - prescriptionId : Long
+        - medicationId : Long
+        - dosage : String
+        - frequency : Frequency
+        - durationDays : int
+        - instructions : String
+        - unitCost : BigDecimal
+        - totalUnits : int
+        - lineCost : BigDecimal
+    }
+
+    class PrescriptionAlert {
+        - id : Long
+        - prescriptionId : Long
+        - level : AlertLevel
+        - type : AlertType
+        - message : String
+        - acknowledged : boolean
+        - overrideNote : String
+        - overriddenBy : String
+        - overriddenAt : LocalDateTime
+        + isCritical() : boolean
+        + isOverridden() : boolean
+    }
+
+    class InteractionRule {
+        - id : Long
+        - type : InteractionType
+        - keyword1 : String
+        - keyword2 : String
+        - severity : AlertLevel
+        - description : String
+        - recommendation : String
+    }
+}
+
+' Composition & Aggregation relationships
+Patient *-- "0..*" PatientAllergy : <<Composition>>
+Patient *-- "0..*" PatientCondition : <<Composition>>
+Prescription *-- "1..*" PrescriptionItem : <<Composition>>
+Prescription *-- "0..*" PrescriptionAlert : <<Composition>>
+Prescription o-- "1..*" Medication : <<Aggregation>>
+Patient "1" -- "0..*" PatientVitals : <<Association>>
+Token "1" -- "1" Patient : <<Association>>
+Token "0..1" -- "1" Doctor : <<Association>>
+Prescription "1" -- "1" Doctor : prescribedBy >
+Prescription "1" -- "1" Patient : prescribedFor >
+
+package "com.audino.service.strategy (Strategy Pattern)" {
+    interface InteractionStrategy <<interface>> {
+        + check(items : List<PrescriptionItem>, patient : Patient, rules : List<InteractionRule>) : List<PrescriptionAlert>
+    }
+
+    class DrugDrugStrategy implements InteractionStrategy {
+        + check(...) : List<PrescriptionAlert>
+    }
+
+    class DrugAllergyStrategy implements InteractionStrategy {
+        + check(...) : List<PrescriptionAlert>
+    }
+
+    class DrugConditionStrategy implements InteractionStrategy {
+        + check(...) : List<PrescriptionAlert>
+    }
+
+    class DuplicateTherapyStrategy implements InteractionStrategy {
+        + check(...) : List<PrescriptionAlert>
+    }
+
+    class SafetyEngine {
+        - strategies : List<InteractionStrategy>
+        - ruleDAO : InteractionRuleDAO
+        + registerStrategy(strategy : InteractionStrategy) : void
+        + evaluate(prescription : Prescription, patient : Patient) : List<PrescriptionAlert>
+    }
+
+    SafetyEngine o-- "1..*" InteractionStrategy : <<Strategy Pattern>>
+}
+
+package "com.audino.observer (Observer Pattern)" {
+    interface QueueObserver <<interface>> {
+        + onQueueUpdated(tokens : List<Token>) : void
+    }
+
+    interface QueueSubject <<interface>> {
+        + registerObserver(observer : QueueObserver) : void
+        + removeObserver(observer : QueueObserver) : void
+        + notifyObservers() : void
+    }
+
+    class QueueService implements QueueSubject {
+        - observers : List<QueueObserver>
+        - tokenDAO : TokenDAO
+        + issueToken(...) : Token
+        + updateTokenStatus(...) : void
+        + pollQueue() : void
+        + notifyObservers() : void
+    }
+
+    QueueService o-- "0..*" QueueObserver : <<Observer Pattern>>
+}
+
+package "com.audino.factory (Factory Pattern)" {
+    class AccountFactory {
+        + {static} fromResultSet(rs : ResultSet) : Account
+        + {static} createAccount(...) : Account
+    }
+
+    class MedicationFactory {
+        + {static} createMedication(type : MedicationType, ...) : Medication
+    }
+
+    class AlertFactory {
+        + {static} createAlertCard(alert : PrescriptionAlert) : AlertCard
+    }
+}
+
+package "com.audino.dao (DAO Pattern Interfaces)" {
+    interface AccountDAO {
+        + findByUsername(username : String) : Optional<Account>
+        + save(account : Account) : Account
+        + update(account : Account) : void
+    }
+    interface PatientDAO {
+        + findById(id : Long) : Optional<Patient>
+        + save(patient : Patient) : Patient
+    }
+    interface MedicationDAO {
+        + findAll() : List<Medication>
+        + search(query : String) : List<Medication>
+    }
+    interface PrescriptionDAO {
+        + saveWithTransaction(prescription : Prescription) : Prescription
+    }
+    interface TokenDAO {
+        + findTodayTokens() : List<Token>
+        + save(token : Token) : Token
+    }
+    interface InteractionRuleDAO {
+        + findAll() : List<InteractionRule>
+    }
+}
+
+package "com.audino.util (Singletons)" {
+    class ConfigurationManager <<Singleton>> {
+        - {static} instance : ConfigurationManager
+        - dataSource : HikariDataSource
+        + {static} getInstance() : ConfigurationManager
+        + getDataSource() : DataSource
+    }
+
+    class SessionManager <<Singleton>> {
+        - {static} instance : SessionManager
+        - currentAccount : Account
+        + {static} getInstance() : SessionManager
+        + setCurrentAccount(account : Account) : void
+        + getCurrentAccount() : Account
+    }
+}
+
+@enduml

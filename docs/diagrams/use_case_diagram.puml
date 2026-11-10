@@ -1,0 +1,109 @@
+@startuml use_case_diagram
+title Audino EMR - Comprehensive Use Case Diagram
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam defaultFontName "Inter"
+skinparam defaultFontSize 12
+
+actor "Staff Member" as Staff <<Abstract>>
+actor "Administrator" as Admin
+actor "Doctor" as Doctor
+actor "Receptionist" as Receptionist
+actor "Patient" as Patient
+actor "Audit System" as System <<System>>
+
+Staff <|-- Admin
+Staff <|-- Doctor
+Staff <|-- Receptionist
+
+rectangle "Audino Clinical Decision Support & EMR System" {
+    package "Authentication & Profile" {
+        usecase "Login with Credentials" as UC_Login
+        usecase "Change Password" as UC_ChangePass
+        usecase "Dispatch Role Dashboard" as UC_Dispatch
+        usecase "Log Authentication Event" as UC_AuditAuth
+    }
+
+    package "Patient Administration & Triage" {
+        usecase "Register Patient Profile" as UC_RegPatient
+        usecase "Capture Visit Vitals & BMI" as UC_Vitals
+        usecase "Issue Daily Outpatient Token" as UC_IssueToken
+        usecase "Check Duplicate Patient" as UC_DupCheck
+    }
+
+    package "Clinical Consultation & Prescribing" {
+        usecase "Call Next Patient" as UC_CallNext
+        usecase "Review Patient Medical Banner" as UC_ReviewBanner
+        usecase "Search Formulary Medications" as UC_SearchMed
+        usecase "Perform Typo Autocorrect" as UC_Autocorrect
+        usecase "Add Prescription Line Item" as UC_AddItem
+        usecase "Run Clinical Safety Engine" as UC_SafetyCheck
+        usecase "Override Critical Interaction" as UC_Override
+        usecase "Record Clinical Justification" as UC_Justification
+        usecase "Approve & Save Prescription" as UC_ApproveRx
+        usecase "Complete Consultation" as UC_CompleteConsult
+    }
+
+    package "Self-Service Patient Kiosk" {
+        usecase "Authenticate Token & Phone/DOB" as UC_KioskAuth
+        usecase "View 4-Phase Daily Pill Schedule" as UC_ViewSchedule
+        usecase "Download Prescription PDF" as UC_DownloadPdf
+        usecase "Enforce Brute-Force Lockout" as UC_Lockout
+    }
+
+    package "Formulary & Governance" {
+        usecase "Manage Staff Accounts" as UC_ManageStaff
+        usecase "Maintain Drug Formulary" as UC_Formulary
+        usecase "Define Interaction Rules" as UC_Rules
+        usecase "Inspect Forensic Audit Trail" as UC_AuditTrail
+        usecase "View Clinical Operational KPI" as UC_KPI
+    }
+}
+
+' Staff relationships
+Staff --> UC_Login
+Staff --> UC_ChangePass
+UC_Login ..> UC_Dispatch : <<include>>
+UC_Login ..> UC_AuditAuth : <<include>>
+
+' Admin relationships
+Admin --> UC_ManageStaff
+Admin --> UC_Formulary
+Admin --> UC_Rules
+Admin --> UC_AuditTrail
+Admin --> UC_KPI
+
+' Receptionist relationships
+Receptionist --> UC_RegPatient
+Receptionist --> UC_Vitals
+Receptionist --> UC_IssueToken
+UC_RegPatient ..> UC_DupCheck : <<include>>
+UC_IssueToken ..> UC_Vitals : <<include>>
+
+' Doctor relationships
+Doctor --> UC_CallNext
+Doctor --> UC_ReviewBanner
+Doctor --> UC_AddItem
+Doctor --> UC_Override
+Doctor --> UC_ApproveRx
+Doctor --> UC_CompleteConsult
+
+UC_AddItem ..> UC_SearchMed : <<include>>
+UC_SearchMed ..> UC_Autocorrect : <<extend>>
+UC_AddItem ..> UC_SafetyCheck : <<include>>
+UC_Override ..> UC_Justification : <<include>>
+UC_ApproveRx ..> UC_SafetyCheck : <<include>>
+
+' Patient relationships
+Patient --> UC_KioskAuth
+Patient --> UC_ViewSchedule
+Patient --> UC_DownloadPdf
+UC_KioskAuth ..> UC_Lockout : <<extend>>
+UC_ViewSchedule ..> UC_KioskAuth : <<include>>
+
+' System auditing
+UC_Override ..> System : <<notifies>>
+UC_ApproveRx ..> System : <<notifies>>
+
+@enduml

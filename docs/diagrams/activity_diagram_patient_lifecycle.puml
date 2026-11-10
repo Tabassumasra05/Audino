@@ -1,0 +1,93 @@
+@startuml activity_diagram_patient_lifecycle
+title Activity Diagram: End-to-End Outpatient Clinical Lifecycle
+skinparam defaultFontName "Inter"
+skinparam shadowing false
+
+|#F8FAFC|Patient / Kiosk|
+|#F1F5F9|Receptionist Desk|
+|#E2E8F0|Consulting Doctor|
+|#CBD5E1|Audino Engine (Safety & Persistence)|
+
+|Patient / Kiosk|
+start
+:Patient arrives at clinic;
+
+|Receptionist Desk|
+:Receptionist searches patient database;
+if (Patient already registered?) then (yes)
+    :Retrieve existing patient record;
+else (no)
+    :Enter demographics (Name, DOB, Phone, Address);
+    :Input known drug allergies & chronic conditions;
+    :Save new patient record;
+endif
+
+:Record visit vitals\n(Height, Weight, BP, Pulse, Temp, SpO2);
+:Auto-calculate BMI & validate physiological limits;
+:Select consulting doctor & issue daily token (e.g. T-001);
+
+|Audino Engine (Safety & Persistence)|
+:Persist token (Status: WAITING);
+:Notify QueueObservers across clinic network;
+
+|Doctor|
+:Doctor clicks 'Call Next' (Ctrl+Enter);
+
+|Audino Engine (Safety & Persistence)|
+:Transition token to IN_CONSULTATION;
+:Load patient medical profile & past visit history;
+
+|Doctor|
+:Review patient banner (Allergies & Conditions chips);
+:Conduct physical examination & history taking;
+
+repeat
+    :Search medication in formulary\n(Typo-tolerant autocomplete);
+    :Select drug, specify dosage, frequency, & duration;
+    
+    |Audino Engine (Safety & Persistence)|
+    :Validate dosage polymorphically;
+    :Execute SafetyEngine strategies;
+    
+    |Doctor|
+    if (Safety Alerts Triggered?) then (yes)
+        if (Alert Level is CRITICAL?) then (yes)
+            :View Critical Alert on Safety Radar;
+            if (Can substitute or remove drug?) then (yes)
+                :Remove offending medication;
+            else (no - clinical necessity)
+                :Click 'Override Alert';
+                :Enter clinical justification (>= 15 characters);
+                :Submit override audit rationale;
+            endif
+        else (WARNING / INFO)
+            :Review recommendation & acknowledge;
+        endif
+    else (no)
+        :Clean safety status;
+    endif
+repeat while (More medications to prescribe?) is (yes)
+->no;
+
+:Doctor clicks 'Approve & Save' (Ctrl+S);
+
+|Audino Engine (Safety & Persistence)|
+:Atomic transaction: Save prescription, items, alerts, audit log;
+:Generate digital pill schedule (Morning/Afternoon/Evening/Night);
+
+|Doctor|
+:Doctor clicks 'Complete Consultation';
+
+|Audino Engine (Safety & Persistence)|
+:Transition token to COMPLETED;
+:Generate official Prescription PDF;
+
+|Patient / Kiosk|
+:Patient proceeds to waiting area / Self-Service Kiosk;
+:Enter Token ID & verify with Phone Last-4 or DOB;
+:View 4-phase daily pill schedule on high-contrast screen;
+:Download / Print Prescription PDF;
+:Tap 'Done' or allow 120s inactivity auto-reset;
+
+stop
+@enduml

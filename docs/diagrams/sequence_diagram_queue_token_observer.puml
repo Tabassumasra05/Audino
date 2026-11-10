@@ -1,0 +1,63 @@
+@startuml sequence_diagram_queue_token_observer
+title Sequence Diagram 2: Outpatient Token Issuance & Real-Time Observer Notification
+autonumber
+skinparam defaultFontName "Inter"
+skinparam shadowing false
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor Receptionist
+boundary "ReceptionistQueueView" as RecView
+control "ReceptionistController" as RecController
+control "QueueService\n(QueueSubject)" as QueueService
+entity "TokenDAO" as TokenDAO
+database "PostgreSQL DB" as DB
+control "DoctorQueueObserver\n(QueueObserver)" as DocObserver
+boundary "DoctorPortalView" as DocView
+
+== Step 1: Token Issuance at Reception ==
+Receptionist -> RecView : Selects patient & clicks 'Issue Token'
+RecView -> RecController : handleIssueToken(patientId, doctorUsername)
+RecController -> QueueService : issueToken(patientId, doctorUsername)
+activate QueueService
+
+QueueService -> TokenDAO : generateNextTokenNo(today)
+activate TokenDAO
+TokenDAO -> DB : SELECT MAX(token_no) FROM tokens WHERE token_date = CURRENT_DATE
+DB --> TokenDAO : return "T-013"
+TokenDAO --> QueueService : return "T-014"
+deactivate TokenDAO
+
+QueueService -> TokenDAO : save(Token("T-014", patientId, doctorUsername, WAITING))
+activate TokenDAO
+TokenDAO -> DB : INSERT INTO tokens (token_no, date, patient_id, doctor, status) VALUES ('T-014', ...)
+DB --> TokenDAO : success
+TokenDAO --> QueueService : return Token(id=1014, status=WAITING)
+deactivate TokenDAO
+
+== Step 2: Subject Notifies Registered Observers ==
+QueueService -> QueueService : notifyObservers()
+
+loop for each registered QueueObserver
+    QueueService -> DocObserver : onQueueUpdated(latestTokensList)
+    activate DocObserver
+    
+    note over DocObserver: Multi-threading safety: dispatch to JavaFX Thread
+    DocObserver -> DocObserver : Platform.runLater(() -> refreshQueueUi(latestTokensList))
+    DocObserver -> DocView : updateTokenTable(latestTokensList)
+    DocView -> DocView : playSubtleHighlightAnimation("T-014")
+    deactivate DocObserver
+end
+
+QueueService --> RecController : return Token(id=1014)
+deactivate QueueService
+
+RecController -> RecView : showSuccessToast("Token T-014 issued")\nrenderTokenReceiptCard("T-014")
+
+== Step 3: Background Scheduled Polling (Cross-Instance Sync) ==
+note over QueueService: Independent instances poll every 3 seconds
+QueueService -> DB : SELECT * FROM tokens WHERE token_date = CURRENT_DATE
+DB --> QueueService : return token snapshot
+QueueService -> QueueService : if (hasQueueChanged(snapshot)) { notifyObservers(); }
+
+@enduml

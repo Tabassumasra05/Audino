@@ -1,0 +1,50 @@
+@startuml state_diagram_token
+title State Machine Diagram: Outpatient Token Lifecycle
+skinparam defaultFontName "Inter"
+skinparam state {
+    BackgroundColor #F8FAFC
+    BorderColor #0F766E
+    FontColor #0F172A
+    ArrowColor #0F766E
+}
+
+[*] --> WAITING : issueToken()\n[Assigned sequential T-XXX]
+
+state WAITING {
+    WAITING : Token queued for today's clinic session
+    WAITING : Observable by Receptionist & Doctor
+}
+
+WAITING --> IN_CONSULTATION : callNext() /\nconsultingDoctor = loggedInDoctor,\ncalled_at = CURRENT_TIMESTAMP
+
+state IN_CONSULTATION {
+    IN_CONSULTATION : Patient currently with doctor
+    IN_CONSULTATION : Clinical pad actively editing
+}
+
+IN_CONSULTATION --> COMPLETED : completeConsultation() /\n[Prescription Approved OR 'No Rx Needed'],\ncompleted_at = CURRENT_TIMESTAMP
+
+state COMPLETED {
+    COMPLETED : Consultation finished
+    COMPLETED : Accessible at Patient Kiosk
+}
+
+WAITING --> CANCELLED : cancelToken() /\n[Patient left or no-show],\ncancelled_at = CURRENT_TIMESTAMP
+
+state CANCELLED {
+    CANCELLED : Token revoked
+    CANCELLED : Ineligible for consultation
+}
+
+COMPLETED --> [*]
+CANCELLED --> [*]
+
+note right of WAITING
+    <b>Illegal Transitions (throw InvalidTokenStateException):</b>
+    * WAITING -> COMPLETED (cannot bypass consultation)
+    * IN_CONSULTATION -> WAITING (cannot return to queue)
+    * COMPLETED -> ANY (terminal state)
+    * CANCELLED -> ANY (terminal state)
+end note
+
+@enduml
