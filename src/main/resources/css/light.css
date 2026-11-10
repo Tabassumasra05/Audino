@@ -1,0 +1,48 @@
+/* Audino Light Theme Design Tokens */
+.root {
+    /* Palette Tokens */
+    -color-bg: #F4F6FA;
+    -color-surface: #FFFFFF;
+    -color-surface-alt: #F8FAFC;
+    -color-border: #E2E8F0;
+    -color-border-subtle: #F1F5F9;
+
+    /* Text Tokens */
+    -color-text: #0F172A;
+    -color-text-secondary: #475569;
+    -color-text-muted: #94A3B8;
+
+    /* Clinical Brand Primary (Teal) */
+    -color-primary: #0F766E;
+    -color-primary-hover: #115E59;
+    -color-primary-soft: #CCFBF1;
+    -color-primary-contrast: #FFFFFF;
+
+    /* Clinical Alert States */
+    -color-critical: #DC2626;
+    -color-critical-soft: #FEE2E2;
+    -color-critical-contrast: #FFFFFF;
+
+    -color-warning: #D97706;
+    -color-warning-soft: #FEF3C7;
+    -color-warning-contrast: #FFFFFF;
+
+    -color-info: #2563EB;
+    -color-info-soft: #DBEAFE;
+    -color-info-contrast: #FFFFFF;
+
+    -color-success: #16A34A;
+    -color-success-soft: #DCFCE7;
+    -color-success-contrast: #FFFFFF;
+
+    /* Navigation Rail */
+    -color-nav-bg: #0B1F2A;
+    -color-nav-text: #CBD5E1;
+    -color-nav-hover: #1E3A4C;
+    -color-nav-active: #0F766E;
+
+    /* Elevation Shadows */
+    -shadow-card: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 14, 0, 0, 3);
+    -shadow-hover: dropshadow(gaussian, rgba(15, 23, 42, 0.14), 18, 0, 0, 6);
+    -shadow-modal: dropshadow(gaussian, rgba(15, 23, 42, 0.25), 30, 0, 0, 10);
+}

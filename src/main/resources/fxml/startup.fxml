@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/19"
+            xmlns:fx="http://javafx.com/fxml/1"
+            prefHeight="700.0" prefWidth="1150.0"
+            minHeight="600.0" minWidth="900.0"
+            styleClass="app-container">
+
+    <!-- Top Global App Bar -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16.0" style="-fx-background-color: -color-surface; -fx-border-color: -color-border; -fx-border-width: 0 0 1px 0; -fx-padding: 12px 24px;">
+            <VBox spacing="2.0">
+                <Label text="Audino EMR" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: -color-primary;" />
+                <Label text="Clinical Decision Support System" styleClass="text-muted" />
+            </VBox>
+            
+            <Region HBox.hgrow="ALWAYS" />
+            
+            <Label fx:id="dbStatusChip" text="PostgreSQL: Connected" styleClass="chip, chip-success" />
+            <Label text="Version 1.0.0" styleClass="chip, chip-info" />
+            <Button fx:id="themeToggleBtn" text="Toggle Theme" styleClass="btn-secondary" />
+        </HBox>
+    </top>
+
+    <!-- Main Content Area wrapped in a ScrollPane for 1366x768 @ 125% DPI responsiveness -->
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="scroll-pane">
+            <VBox spacing="24.0" style="-fx-padding: 32px;">
+                <!-- Header Banner -->
+                <VBox spacing="6.0">
+                    <Label text="System Initialization Complete" styleClass="page-title" />
+                    <Label text="Database schema validated, tables created with ACID cascades, and clinical demo records seeded." styleClass="text-secondary" />
+                </VBox>
+
+                <!-- Status Cards Grid -->
+                <HBox spacing="16.0">
+                    <!-- Card 1 -->
+                    <VBox spacing="8.0" styleClass="surface-card" HBox.hgrow="ALWAYS">
+                        <Label text="RELATIONAL ENGINE" styleClass="text-muted" style="-fx-font-size: 11px; -fx-font-weight: bold;" />
+                        <Label fx:id="dbEngineLabel" text="PostgreSQL (Embedded / Local)" styleClass="card-title" />
+                        <Label text="HikariCP Connection Pool (10 max)" styleClass="text-secondary" />
+                    </VBox>
+
+                    <!-- Card 2 -->
+                    <VBox spacing="8.0" styleClass="surface-card" HBox.hgrow="ALWAYS">
+                        <Label text="CLINICAL FORMULARY" styleClass="text-muted" style="-fx-font-size: 11px; -fx-font-weight: bold;" />
+                        <Label text="41 Formularies Seeded" styleClass="card-title" />
+                        <Label text="Tablets, Capsules, Liquids, Injections" styleClass="text-secondary" />
+                    </VBox>
+
+                    <!-- Card 3 -->
+                    <VBox spacing="8.0" styleClass="surface-card" HBox.hgrow="ALWAYS">
+                        <Label text="SAFETY ENGINE" styleClass="text-muted" style="-fx-font-size: 11px; -fx-font-weight: bold;" />
+                        <Label text="20 Clinical Rules Active" styleClass="card-title" />
+                        <Label text="Drug-Drug, Drug-Allergy, Conditions" styleClass="text-secondary" />
+                    </VBox>
+
+                    <!-- Card 4 -->
+                    <VBox spacing="8.0" styleClass="surface-card" HBox.hgrow="ALWAYS">
+                        <Label text="OUTPATIENT QUEUE" styleClass="text-muted" style="-fx-font-size: 11px; -fx-font-weight: bold;" />
+                        <Label text="15 Sample Patients" styleClass="card-title" />
+                        <Label text="8 Tokens Generated for Today" styleClass="text-secondary" />
+                    </VBox>
+                </HBox>
+
+                <!-- Core Information & Verification Panel -->
+                <VBox spacing="16.0" styleClass="surface-card">
+                    <Label text="Phase 2 Infrastructure Verification" styleClass="section-title" />
+                    <Separator />
+                    <VBox spacing="8.0">
+                        <Label text="✔ Zero-Setup Embedded PostgreSQL Fallback configured via ConfigurationManager" styleClass="text-body" />
+                        <Label text="✔ Idempotent schema.sql executed via DatabaseInitializer" styleClass="text-body" />
+                        <Label text="✔ Indian healthcare dataset seeded via DataSeeder (Accounts, Formularies, Rules, Patients)" styleClass="text-body" />
+                        <Label text="✔ Inter font loaded dynamically from resources/fonts/" styleClass="text-body" />
+                        <Label text="✔ Custom looked-up CSS design tokens (light.css, dark.css) applied" styleClass="text-body" />
+                        <Label text="✔ Ready for Phase 3 Core Backend domain model and safety engine build" styleClass="text-body" />
+                    </VBox>
+                    <HBox spacing="12.0" alignment="CENTER_LEFT">
+                        <Button fx:id="launchLoginBtn" text="Proceed to Core Phase 3" styleClass="btn-primary" />
+                        <Label text="Press to continue" styleClass="text-muted" />
+                    </HBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <!-- Bottom Status Bar -->
+    <bottom>
+        <HBox alignment="CENTER_LEFT" spacing="12.0" style="-fx-background-color: -color-surface; -fx-border-color: -color-border; -fx-border-width: 1px 0 0 0; -fx-padding: 8px 24px;">
+            <Label text="Audino Desktop EMR v1.0.0" styleClass="text-muted" />
+            <Separator orientation="VERTICAL" />
+            <Label text="Platform: OpenJDK 17 + JavaFX 19" styleClass="text-muted" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label text="Viewport Responsive: 1366x768 @ 125% DPI ready" styleClass="text-muted" />
+        </HBox>
+    </bottom>
+</BorderPane>
