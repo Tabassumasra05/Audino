@@ -23,7 +23,7 @@
         <!-- Brand Logo & Name -->
         <HBox alignment="CENTER_LEFT" spacing="14">
             <StackPane style="-fx-background-color: #14B8A6; -fx-background-radius: 12px; -fx-pref-width: 48px; -fx-pref-height: 48px;">
-                <FontIcon iconLiteral="mdi2s-shield-cross" iconSize="28" style="-fx-icon-color: #071720;" />
+                <FontIcon iconLiteral="mdi2s-shield-cross" iconSize="28" iconColor="#071720" />
             </StackPane>
             <VBox spacing="2">
                 <Label text="AUDINO" style="-fx-font-size: 26px; -fx-font-weight: 800; -fx-text-fill: #FFFFFF; -fx-letter-spacing: 1.5px;" />
@@ -43,7 +43,7 @@
         <VBox spacing="18">
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <StackPane style="-fx-background-color: rgba(20, 184, 166, 0.2); -fx-background-radius: 8px; -fx-pref-width: 32px; -fx-pref-height: 32px;">
-                    <FontIcon iconLiteral="mdi2a-alert-decagram" iconSize="18" style="-fx-icon-color: #2DD4BF;" />
+                    <FontIcon iconLiteral="mdi2a-alert-decagram" iconSize="18" iconColor="#2DD4BF" />
                 </StackPane>
                 <VBox spacing="2">
                     <Label text="Zero Unmonitored ADEs" style="-fx-font-weight: bold; -fx-text-fill: #FFFFFF; -fx-font-size: 13px;" />
@@ -53,7 +53,7 @@
 
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <StackPane style="-fx-background-color: rgba(20, 184, 166, 0.2); -fx-background-radius: 8px; -fx-pref-width: 32px; -fx-pref-height: 32px;">
-                    <FontIcon iconLiteral="mdi2s-shield-lock" iconSize="18" style="-fx-icon-color: #2DD4BF;" />
+                    <FontIcon iconLiteral="mdi2s-shield-lock" iconSize="18" iconColor="#2DD4BF" />
                 </StackPane>
                 <VBox spacing="2">
                     <Label text="Mandatory Clinical Override" style="-fx-font-weight: bold; -fx-text-fill: #FFFFFF; -fx-font-size: 13px;" />
@@ -63,7 +63,7 @@
 
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <StackPane style="-fx-background-color: rgba(20, 184, 166, 0.2); -fx-background-radius: 8px; -fx-pref-width: 32px; -fx-pref-height: 32px;">
-                    <FontIcon iconLiteral="mdi2c-clock-time-four" iconSize="18" style="-fx-icon-color: #2DD4BF;" />
+                    <FontIcon iconLiteral="mdi2c-clock-time-four" iconSize="18" iconColor="#2DD4BF" />
                 </StackPane>
                 <VBox spacing="2">
                     <Label text="Chrono-Grid Pill Schedule" style="-fx-font-weight: bold; -fx-text-fill: #FFFFFF; -fx-font-size: 13px;" />
@@ -79,6 +79,7 @@
             <Label text="PATIENT SELF-SERVICE TERMINAL" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #5EEAD4;" />
             <Label text="Are you a patient checking today's prescription schedule?" style="-fx-font-size: 11px; -fx-text-fill: #CBD5E1;" wrapText="true" />
             <Button fx:id="kioskBtn" text="Open Patient Kiosk (No Login Required)"
+                    onAction="#openKiosk"
                     style="-fx-background-color: #14B8A6; -fx-text-fill: #071720; -fx-font-weight: bold; -fx-background-radius: 6px; -fx-padding: 8px 14px; -fx-cursor: hand;" />
         </VBox>
     </VBox>
@@ -103,7 +104,7 @@
             <VBox spacing="6">
                 <Label text="USERNAME" style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted;" />
                 <HBox alignment="CENTER_LEFT" style="-fx-background-color: -color-surface-alt; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 4px 10px;">
-                    <FontIcon iconLiteral="mdi2a-account" iconSize="18" style="-fx-icon-color: -color-text-muted;" />
+                    <FontIcon iconLiteral="mdi2a-account" iconSize="18" iconColor="#64748B" />
                     <TextField fx:id="usernameField" promptText="e.g. doctor, admin, reception"
                                style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 13px;" HBox.hgrow="ALWAYS" />
                 </HBox>
@@ -111,12 +112,16 @@
 
             <!-- Password Field with Show/Hide and Caps Lock warning -->
             <VBox spacing="6">
-                <HBox alignment="CENTER_LEFT">
+                <HBox alignment="CENTER_LEFT" spacing="8">
                     <Label text="PASSWORD" style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted;" HBox.hgrow="ALWAYS" />
-                    <Label fx:id="capsLockWarning" text="⚠ CAPS LOCK IS ON" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: -color-warning;" />
+                    <Label fx:id="capsLockWarning" text="CAPS LOCK IS ON" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: -color-warning;">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi2a-alert" iconSize="12" iconColor="#D97706" />
+                        </graphic>
+                    </Label>
                 </HBox>
                 <HBox alignment="CENTER_LEFT" style="-fx-background-color: -color-surface-alt; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 4px 10px;">
-                    <FontIcon iconLiteral="mdi2l-lock" iconSize="18" style="-fx-icon-color: -color-text-muted;" />
+                    <FontIcon iconLiteral="mdi2l-lock" iconSize="18" iconColor="#64748B" />
                     <StackPane HBox.hgrow="ALWAYS">
                         <PasswordField fx:id="passwordField" promptText="Enter your password"
                                        style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 13px;" />
@@ -125,7 +130,7 @@
                     </StackPane>
                     <Button fx:id="togglePasswordBtn" style="-fx-background-color: transparent; -fx-cursor: hand; -fx-padding: 4px;">
                         <graphic>
-                            <FontIcon iconLiteral="mdi2e-eye" iconSize="16" style="-fx-icon-color: -color-text-muted;" />
+                            <FontIcon iconLiteral="mdi2e-eye" iconSize="16" iconColor="#64748B" />
                         </graphic>
                     </Button>
                 </HBox>

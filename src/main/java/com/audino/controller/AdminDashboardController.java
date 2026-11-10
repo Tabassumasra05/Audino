@@ -170,8 +170,8 @@ public class AdminDashboardController {
         int activeStaff = accountDAO.countActiveStaff();
 
         statCardsContainer.getChildren().addAll(
-            new StatCard("Today's Tokens", String.valueOf(todayTokens), "Outpatient registrations today", "mdi2c-ticket-account", "primary-soft"),
-            new StatCard("Prescriptions Issued", String.valueOf(todayRx), "Clinical approvals today", "mdi2f-file-document-check", "success-soft"),
+            new StatCard("Today's Tokens", String.valueOf(todayTokens), "Outpatient registrations today", "mdi2t-ticket-confirmation", "primary-soft"),
+            new StatCard("Prescriptions Issued", String.valueOf(todayRx), "Clinical approvals today", "mdi2f-file-check", "success-soft"),
             new StatCard("Critical Overrides", String.valueOf(todayOverrides), "Mandatory rationales logged", "mdi2s-shield-alert", "critical-soft"),
             new StatCard("Active Staff", String.valueOf(activeStaff), "Doctors & receptionist on duty", "mdi2a-account-group", "info-soft")
         );

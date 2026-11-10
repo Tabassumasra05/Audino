@@ -7,6 +7,11 @@
     -fx-background-color: -color-bg;
 }
 
+/* Explicit Ikonli Vector Icon Protection against font inheritance */
+.ikonli-font-icon {
+    -fx-font-family: 'Material Design Icons';
+}
+
 /* Background & Surfaces */
 .app-container {
     -fx-background-color: -color-bg;

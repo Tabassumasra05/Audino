@@ -19,6 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <?import com.audino.ui.components.SearchField?>
+<?import com.audino.ui.components.Chip?>
 
 <StackPane fx:id="doctorRootPane" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.audino.controller.DoctorConsultationController"
@@ -96,7 +97,7 @@
                                 <!-- Typo Autocorrect Banner -->
                                 <HBox fx:id="didYouMeanContainer" alignment="CENTER_LEFT" spacing="8"
                                       style="-fx-background-color: -color-primary-soft; -fx-padding: 6px 12px; -fx-background-radius: 6px;">
-                                    <FontIcon iconLiteral="mdi2i-information" iconSize="16" style="-fx-icon-color: -color-primary;" />
+                                    <FontIcon iconLiteral="mdi2i-information" iconSize="16" iconColor="#0F766E" />
                                     <Label text="Did you mean: " style="-fx-font-size: 12px; -fx-text-fill: -color-text;" />
                                     <Label fx:id="didYouMeanLabel" text="Amoxicillin" style="-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: -color-primary; -fx-underline: true; -fx-cursor: hand;" onMouseClicked="#applyAutocorrectSuggestion" />
                                     <Label text="? (Click to apply)" style="-fx-font-size: 11px; -fx-text-fill: -color-text-secondary;" />
@@ -143,7 +144,7 @@
                                 <HBox alignment="CENTER_LEFT">
                                     <Label text="CURRENT CONSULTATION PRESCRIPTION" styleClass="card-title" HBox.hgrow="ALWAYS" />
                                     <Label text="Total Cost: " style="-fx-font-size: 14px; -fx-font-weight: 500;" />
-                                    <Label fx:id="totalCostLabel" text="₹0.00" style="-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: -color-primary;" />
+                                    <Label fx:id="totalCostLabel" text="INR 0.00" style="-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: -color-primary;" />
                                 </HBox>
 
                                 <TableView fx:id="rxItemsTable" prefHeight="140.0" styleClass="data-table">
@@ -162,7 +163,7 @@
                             <!-- Bottom: Live CDS Safety Radar & Blocking Banner -->
                             <VBox fx:id="safetyRadarBox" styleClass="surface-card" spacing="12">
                                 <HBox alignment="CENTER_LEFT" spacing="8">
-                                    <FontIcon iconLiteral="mdi2r-radar" iconSize="20" style="-fx-icon-color: -color-primary;" />
+                                    <FontIcon iconLiteral="mdi2r-radar" iconSize="20" iconColor="#0F766E" />
                                     <Label text="LIVE CLINICAL DECISION SUPPORT SAFETY RADAR" styleClass="card-title" HBox.hgrow="ALWAYS" />
                                     <Chip text="ACTIVE SCREENING" variant="PRIMARY" iconLiteral="mdi2c-check" />
                                 </HBox>
@@ -170,12 +171,12 @@
                                 <!-- Blocking Alert Banner (Visible when unacknowledged critical alert exists) -->
                                 <HBox fx:id="blockingBanner" alignment="CENTER_LEFT" spacing="12" visible="false" managed="false"
                                       style="-fx-background-color: #FEE2E2; -fx-border-color: #DC2626; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 12px 16px;">
-                                    <FontIcon iconLiteral="mdi2a-alert-circle" iconSize="24" style="-fx-icon-color: #DC2626;" />
+                                    <FontIcon iconLiteral="mdi2a-alert-circle" iconSize="24" iconColor="#DC2626" />
                                     <VBox spacing="2" HBox.hgrow="ALWAYS">
                                         <Label text="CRITICAL SAFETY CONTRAINDICATION DETECTED"
                                                style="-fx-font-weight: 800; -fx-font-size: 13px; -fx-text-fill: #991B1B;" />
                                         <Label fx:id="blockingBannerLabel"
-                                               text="Prescription approval is locked. You must provide a formal clinical justification (≥ 15 characters) before this medication can be prescribed."
+                                               text="Prescription approval is locked. You must provide a formal clinical justification (&gt;= 15 characters) before this medication can be prescribed."
                                                style="-fx-font-size: 11px; -fx-text-fill: #7F1D1D;" wrapText="true" />
                                     </VBox>
                                 </HBox>

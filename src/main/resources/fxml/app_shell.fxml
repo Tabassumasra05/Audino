@@ -24,7 +24,7 @@
             <!-- Brand Header -->
             <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 8px 6px;">
                 <StackPane style="-fx-background-color: #14B8A6; -fx-background-radius: 8px; -fx-pref-width: 32px; -fx-pref-height: 32px;">
-                    <FontIcon iconLiteral="mdi2s-shield-cross" iconSize="20" style="-fx-icon-color: #071720;" />
+                    <FontIcon iconLiteral="mdi2s-shield-cross" iconSize="20" iconColor="#071720" />
                 </StackPane>
                 <VBox spacing="1">
                     <Label text="AUDINO" style="-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #FFFFFF; -fx-letter-spacing: 1px;" />
@@ -47,21 +47,21 @@
                 <Button fx:id="navConsultationBtn" text="Doctor Consultation" maxWidth="Infinity" alignment="CENTER_LEFT"
                         style="-fx-background-color: transparent; -fx-text-fill: -color-nav-text; -fx-font-size: 13px; -fx-font-weight: 500; -fx-background-radius: 8px; -fx-padding: 10px 14px; -fx-cursor: hand;">
                     <graphic>
-                        <FontIcon iconLiteral="mdi2s-stethoscope" iconSize="18" style="-fx-icon-color: #2DD4BF;" />
+                        <FontIcon iconLiteral="mdi2s-stethoscope" iconSize="18" iconColor="#2DD4BF" />
                     </graphic>
                 </Button>
 
                 <Button fx:id="navQueueBtn" text="Queue &amp; Triage" maxWidth="Infinity" alignment="CENTER_LEFT"
                         style="-fx-background-color: transparent; -fx-text-fill: -color-nav-text; -fx-font-size: 13px; -fx-font-weight: 500; -fx-background-radius: 8px; -fx-padding: 10px 14px; -fx-cursor: hand;">
                     <graphic>
-                        <FontIcon iconLiteral="mdi2c-clipboard-account" iconSize="18" style="-fx-icon-color: #38BDF8;" />
+                        <FontIcon iconLiteral="mdi2c-clipboard-account" iconSize="18" iconColor="#38BDF8" />
                     </graphic>
                 </Button>
 
                 <Button fx:id="navAdminBtn" text="Administration Portal" maxWidth="Infinity" alignment="CENTER_LEFT"
                         style="-fx-background-color: transparent; -fx-text-fill: -color-nav-text; -fx-font-size: 13px; -fx-font-weight: 500; -fx-background-radius: 8px; -fx-padding: 10px 14px; -fx-cursor: hand;">
                     <graphic>
-                        <FontIcon iconLiteral="mdi2s-shield-account" iconSize="18" style="-fx-icon-color: #FB923C;" />
+                        <FontIcon iconLiteral="mdi2s-shield-account" iconSize="18" iconColor="#FB923C" />
                     </graphic>
                 </Button>
 
@@ -72,21 +72,21 @@
                 <Button fx:id="navKioskBtn" text="Patient Kiosk Mode" maxWidth="Infinity" alignment="CENTER_LEFT"
                         style="-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-font-size: 12px; -fx-background-radius: 8px; -fx-padding: 8px 14px; -fx-cursor: hand;">
                     <graphic>
-                        <FontIcon iconLiteral="mdi2k-kiosk" iconSize="16" style="-fx-icon-color: #94A3B8;" />
+                        <FontIcon iconLiteral="mdi2t-tablet" iconSize="16" iconColor="#94A3B8" />
                     </graphic>
                 </Button>
 
                 <Button fx:id="themeToggleBtn" text="Toggle Dark Mode" maxWidth="Infinity" alignment="CENTER_LEFT"
                         style="-fx-background-color: transparent; -fx-text-fill: -color-nav-text; -fx-font-size: 12px; -fx-background-radius: 8px; -fx-padding: 8px 14px; -fx-cursor: hand;">
                     <graphic>
-                        <FontIcon iconLiteral="mdi2t-theme-light-dark" iconSize="16" style="-fx-icon-color: #E2E8F0;" />
+                        <FontIcon iconLiteral="mdi2t-theme-light-dark" iconSize="16" iconColor="#E2E8F0" />
                     </graphic>
                 </Button>
 
                 <Button fx:id="logoutBtn" text="Sign Out" maxWidth="Infinity" alignment="CENTER_LEFT"
                         style="-fx-background-color: transparent; -fx-text-fill: #F87171; -fx-font-size: 12px; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-padding: 8px 14px; -fx-cursor: hand;">
                     <graphic>
-                        <FontIcon iconLiteral="mdi2l-logout" iconSize="16" style="-fx-icon-color: #F87171;" />
+                        <FontIcon iconLiteral="mdi2l-logout" iconSize="16" iconColor="#F87171" />
                     </graphic>
                 </Button>
             </VBox>
@@ -115,7 +115,7 @@
                     <Button fx:id="commandPaletteBtn" text="Search anything... (Ctrl + K)"
                             style="-fx-background-color: -color-surface-alt; -fx-text-fill: -color-text-secondary; -fx-border-color: -color-border; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 6px 14px; -fx-font-size: 11px; -fx-cursor: hand;">
                         <graphic>
-                            <FontIcon iconLiteral="mdi2m-magnify" iconSize="14" style="-fx-icon-color: -color-text-muted;" />
+                            <FontIcon iconLiteral="mdi2m-magnify" iconSize="14" iconColor="#64748B" />
                         </graphic>
                     </Button>
 

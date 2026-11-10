@@ -74,6 +74,14 @@ public class SearchField extends HBox {
         this("Search...");
     }
 
+    public String getPromptText() {
+        return textField.getPromptText();
+    }
+
+    public void setPromptText(String promptText) {
+        textField.setPromptText(promptText);
+    }
+
     public void setOnSearch(Consumer<String> onSearch) {
         this.onSearch = onSearch;
     }

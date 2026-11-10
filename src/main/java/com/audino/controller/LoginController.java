@@ -100,6 +100,7 @@ public class LoginController {
         try {
             FontIcon icon = new FontIcon(passwordVisible ? "mdi2e-eye-off" : "mdi2e-eye");
             icon.setIconSize(16);
+            icon.setIconColor(javafx.scene.paint.Color.web("#64748B"));
             togglePasswordBtn.setGraphic(icon);
         } catch (Exception ignored) {
             togglePasswordBtn.setText(passwordVisible ? "Hide" : "Show");

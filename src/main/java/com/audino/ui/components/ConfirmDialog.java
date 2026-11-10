@@ -105,9 +105,9 @@ public class ConfirmDialog {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
         try {
-            FontIcon icon = new FontIcon("mdi2a-shield-alert");
+            FontIcon icon = new FontIcon("mdi2s-shield-alert");
             icon.setIconSize(24);
-            icon.setStyle("-fx-icon-color: -color-critical;");
+            icon.setIconColor(javafx.scene.paint.Color.web("#DC2626"));
             header.getChildren().add(icon);
         } catch (Exception ignored) {
         }

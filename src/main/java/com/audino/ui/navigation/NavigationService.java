@@ -80,18 +80,19 @@ public class NavigationService {
             Scene scene = new Scene(root);
             ThemeManager.getInstance().applyTheme(scene);
 
-            primaryStage.setTitle("Audino - " + title);
-            primaryStage.setScene(scene);
-            this.currentPageTitle = title;
+            if (primaryStage != null) {
+                primaryStage.setTitle("Audino - " + title);
+                primaryStage.setScene(scene);
 
-            // Ensure window stays within constraints
-            if (primaryStage.getMinWidth() < 1000) {
-                primaryStage.setMinWidth(1000);
+                // Ensure window stays within constraints
+                if (primaryStage.getMinWidth() < 1000) {
+                    primaryStage.setMinWidth(1000);
+                }
+                if (primaryStage.getMinHeight() < 600) {
+                    primaryStage.setMinHeight(600);
+                }
+                primaryStage.show();
             }
-            if (primaryStage.getMinHeight() < 600) {
-                primaryStage.setMinHeight(600);
-            }
-            primaryStage.show();
 
             logger.info("Root scene switched to: {} ('{}')", fxmlPath, title);
         } catch (IOException e) {
