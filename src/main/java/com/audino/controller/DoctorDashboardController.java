@@ -10,6 +10,7 @@ import com.audino.model.Token;
 import com.audino.model.TokenStatus;
 import com.audino.service.QueueService;
 import com.audino.ui.components.Chip;
+import com.audino.ui.components.EmptyState;
 import com.audino.ui.components.StatCard;
 import com.audino.ui.navigation.NavigationService;
 import com.audino.util.ConfigurationManager;
@@ -23,7 +24,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,7 @@ public class DoctorDashboardController {
     @FXML private Label doctorGreetingLabel;
     @FXML private Label doctorSubLabel;
     @FXML private Button quickConsultBtn;
-    @FXML private HBox kpiContainer;
+    @FXML private GridPane kpiContainer;
 
     @FXML private Label nextTokenLabel;
     @FXML private Label nextPatientNameLabel;
@@ -151,6 +152,11 @@ public class DoctorDashboardController {
             }
         });
 
+        queueTableView.setPlaceholder(new EmptyState(
+                "mdi2c-calendar-check",
+                "No Patients in Queue",
+                "There are currently no outpatient consultation tokens assigned to you today."
+        ));
         queueTableView.setItems(tokenList);
     }
 
@@ -166,7 +172,7 @@ public class DoctorDashboardController {
         long completedCount = allTokens.stream().filter(t -> t.getStatus() == TokenStatus.COMPLETED).count();
         long totalCount = allTokens.size();
 
-        kpiContainer.getChildren().setAll(
+        StatCard.populateRow(kpiContainer,
             new StatCard("Waiting Patients", String.valueOf(waitingCount), "In OPD waiting area", "mdi2a-account-clock", "warning-soft"),
             new StatCard("In Consultation", String.valueOf(inConsultationCount), "Active consultation room", "mdi2s-stethoscope", "primary-soft"),
             new StatCard("Completed Today", String.valueOf(completedCount), "Prescriptions dispensed", "mdi2c-check-circle", "success-soft"),

@@ -276,6 +276,12 @@ public class DoctorConsultationController implements QueueObserver {
             }
         });
 
+        queueListView.setPlaceholder(new EmptyState(
+                "mdi2a-account-clock",
+                "Queue Empty",
+                "No waiting patients in your queue right now.",
+                true
+        ));
         queueListView.setItems(doctorQueue);
         queueListView.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
             if (n != null) {
@@ -361,6 +367,11 @@ public class DoctorConsultationController implements QueueObserver {
         vitalsColTemp.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTemperatureC() + " °C"));
         vitalsColBmi.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.1f (%s)", c.getValue().calculateBmi(), c.getValue().getBmiCategory())));
 
+        vitalsTable.setPlaceholder(new EmptyState(
+                "mdi2h-heart-pulse",
+                "No Vitals Recorded",
+                "No baseline triage vitals recorded for this patient yet."
+        ));
         vitalsTable.setItems(vitalsHistory);
     }
 
@@ -404,6 +415,12 @@ public class DoctorConsultationController implements QueueObserver {
                 : "Unset"
         ));
 
+        formularyTable.setPlaceholder(new EmptyState(
+                "mdi2p-pill",
+                "No Matching Medications",
+                "Search by generic or brand name above.",
+                true
+        ));
         formularyTable.setItems(formularyResults);
         formularyResults.setAll(medicationDAO.findAll());
 
@@ -485,6 +502,12 @@ public class DoctorConsultationController implements QueueObserver {
             }
         });
 
+        rxItemsTable.setPlaceholder(new EmptyState(
+                "mdi2f-file-document-outline",
+                "Prescription Empty",
+                "Select a medication from the formulary above and click '+ Add Drug'.",
+                true
+        ));
         rxItemsTable.setItems(prescriptionItems);
 
         addItemBtn.setOnAction(e -> handleAddMedicationItem());
@@ -669,6 +692,11 @@ public class DoctorConsultationController implements QueueObserver {
         histColItems.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getItems().size() + " medications prescribed"));
         histColCost.setCellValueFactory(c -> new SimpleStringProperty("₹" + c.getValue().getTotalCost().toPlainString()));
 
+        historyTable.setPlaceholder(new EmptyState(
+                "mdi2h-history",
+                "No Prior Prescriptions",
+                "This patient has no previously finalized prescriptions on record."
+        ));
         historyTable.setItems(pastPrescriptions);
     }
 

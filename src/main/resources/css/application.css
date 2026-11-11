@@ -7,6 +7,10 @@
     -fx-background-color: -color-bg;
 }
 
+.label {
+    -fx-text-fill: -color-text;
+}
+
 /* Explicit Ikonli Vector Icon Protection against font inheritance */
 .ikonli-font-icon {
     -fx-font-family: 'Material Design Icons';
@@ -154,6 +158,67 @@
     -fx-effect: dropshadow(gaussian, rgba(15, 118, 110, 0.25), 6, 0, 0, 0);
 }
 
+.text-area {
+    -fx-padding: 0;
+}
+
+.text-area .content {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 7px;
+    -fx-padding: 8px 12px;
+}
+
+.date-picker {
+    -fx-background-color: -color-surface;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-border-width: 1px;
+}
+
+.date-picker > .text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: -color-text;
+    -fx-padding: 7px 10px;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: -color-surface-alt;
+    -fx-background-radius: 0 7px 7px 0;
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 0 0 1px;
+    -fx-cursor: hand;
+}
+
+.date-picker .arrow-button .arrow {
+    -fx-background-color: -color-text-secondary;
+}
+
+.date-picker-popup {
+    -fx-background-color: -color-surface;
+    -fx-border-color: -color-border;
+    -fx-effect: -shadow-hover;
+}
+
+.date-picker-popup .month-year-pane {
+    -fx-background-color: -color-surface-alt;
+}
+
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: -color-text;
+}
+
+.date-picker-popup .day-cell {
+    -fx-background-color: -color-surface;
+    -fx-text-fill: -color-text;
+}
+
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: -color-primary-soft;
+    -fx-text-fill: -color-primary;
+}
+
 .combo-box {
     -fx-background-color: -color-surface;
     -fx-border-color: -color-border;
@@ -164,48 +229,202 @@
     -fx-font-size: 13px;
 }
 
+.combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text;
+    -fx-padding: 3px 6px;
+}
+
+.combo-box .arrow-button .arrow {
+    -fx-background-color: -color-text-secondary;
+}
+
 .combo-box:focused {
     -fx-border-color: -color-primary;
 }
 
+.combo-box-popup .list-view {
+    -fx-background-color: -color-surface;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8px;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 4px;
+    -fx-effect: -shadow-hover;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 6px;
+    -fx-text-fill: -color-text;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.combo-box-popup .list-view .list-cell:hover,
+.combo-box-popup .list-view .list-cell:filled:hover {
+    -fx-background-color: -color-primary-soft;
+    -fx-text-fill: -color-text;
+}
+
+.combo-box-popup .list-view .list-cell:selected,
+.combo-box-popup .list-view .list-cell:filled:selected,
+.combo-box-popup .list-view .list-cell:filled:selected:hover {
+    -fx-background-color: -color-primary-soft;
+    -fx-text-fill: -color-primary;
+    -fx-font-weight: 600;
+}
+
+.combo-box-popup .list-view .list-cell:empty {
+    -fx-background-color: transparent;
+}
+
+/* StatCard Soft-Colored Circle Icon Badges */
+.stat-icon-container {
+    -fx-background-radius: 999px;
+    -fx-alignment: center;
+}
+
+.stat-icon-container.primary-soft {
+    -fx-background-color: -color-primary-soft;
+}
+.stat-icon-container.primary-soft .ikonli-font-icon {
+    -fx-icon-color: -color-primary;
+}
+
+.stat-icon-container.warning-soft {
+    -fx-background-color: -color-warning-soft;
+}
+.stat-icon-container.warning-soft .ikonli-font-icon {
+    -fx-icon-color: -color-warning;
+}
+
+.stat-icon-container.info-soft {
+    -fx-background-color: -color-info-soft;
+}
+.stat-icon-container.info-soft .ikonli-font-icon {
+    -fx-icon-color: -color-info;
+}
+
+.stat-icon-container.success-soft {
+    -fx-background-color: -color-success-soft;
+}
+.stat-icon-container.success-soft .ikonli-font-icon {
+    -fx-icon-color: -color-success;
+}
+
+.stat-icon-container.critical-soft {
+    -fx-background-color: -color-critical-soft;
+}
+.stat-icon-container.critical-soft .ikonli-font-icon {
+    -fx-icon-color: -color-critical;
+}
+
+/* Highlighted Selected Patient Card */
+.selected-patient-card {
+    -fx-background-color: -color-primary-soft;
+    -fx-border-color: -color-primary;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 14px;
+}
+
 /* Status Chips & Badges */
 .chip {
+    -fx-background-color: -color-surface-alt;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 999px;
+    -fx-border-width: 1px;
     -fx-background-radius: 999px;
     -fx-padding: 4px 10px;
+}
+
+.chip .chip-label {
+    -fx-text-fill: -color-text-secondary;
     -fx-font-size: 11px;
     -fx-font-weight: 600;
 }
 
-.chip-critical {
-    -fx-background-color: -color-critical-soft;
-    -fx-text-fill: -color-critical;
-    -fx-border-color: derive(-color-critical, 40%);
+.chip .chip-icon {
+    -fx-icon-color: -color-text-secondary;
+}
+
+.chip-primary {
+    -fx-background-color: -color-primary-soft;
+    -fx-border-color: -color-primary;
     -fx-border-radius: 999px;
     -fx-border-width: 1px;
+}
+
+.chip-primary .chip-label {
+    -fx-text-fill: -color-primary;
+}
+
+.chip-primary .chip-icon {
+    -fx-icon-color: -color-primary;
+}
+
+.chip-critical {
+    -fx-background-color: -color-critical-soft;
+    -fx-border-color: -color-critical;
+    -fx-border-radius: 999px;
+    -fx-border-width: 1px;
+}
+
+.chip-critical .chip-label {
+    -fx-text-fill: -color-critical;
+}
+
+.chip-critical .chip-icon {
+    -fx-icon-color: -color-critical;
 }
 
 .chip-warning {
     -fx-background-color: -color-warning-soft;
-    -fx-text-fill: -color-warning;
-    -fx-border-color: derive(-color-warning, 40%);
+    -fx-border-color: -color-warning;
     -fx-border-radius: 999px;
     -fx-border-width: 1px;
+}
+
+.chip-warning .chip-label {
+    -fx-text-fill: -color-warning;
+}
+
+.chip-warning .chip-icon {
+    -fx-icon-color: -color-warning;
 }
 
 .chip-info {
     -fx-background-color: -color-info-soft;
-    -fx-text-fill: -color-info;
-    -fx-border-color: derive(-color-info, 40%);
+    -fx-border-color: -color-info;
     -fx-border-radius: 999px;
     -fx-border-width: 1px;
 }
 
+.chip-info .chip-label {
+    -fx-text-fill: -color-info;
+}
+
+.chip-info .chip-icon {
+    -fx-icon-color: -color-info;
+}
+
 .chip-success {
     -fx-background-color: -color-success-soft;
-    -fx-text-fill: -color-success;
-    -fx-border-color: derive(-color-success, 40%);
+    -fx-border-color: -color-success;
     -fx-border-radius: 999px;
     -fx-border-width: 1px;
+}
+
+.chip-success .chip-label {
+    -fx-text-fill: -color-success;
+}
+
+.chip-success .chip-icon {
+    -fx-icon-color: -color-success;
 }
 
 /* Navigation Rail */
@@ -273,6 +492,10 @@
     -fx-background-color: -color-surface-alt;
     -fx-border-color: -color-border;
     -fx-border-width: 0 0 1px 0;
+}
+
+.table-view .filler {
+    -fx-background-color: transparent;
 }
 
 .table-view .column-header {
@@ -367,17 +590,51 @@
     -fx-font-weight: bold;
 }
 
-/* ListView Clean Card Styling */
-.list-view {
+/* Queue ListView Clean Card Styling (Doctor Consultation Queue) */
+.queue-list-view {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
 
-.list-cell {
+.queue-list-view .list-cell {
     -fx-background-color: transparent;
     -fx-padding: 4px 0;
 }
 
-.list-cell:empty {
+.queue-list-view .list-cell:empty {
     -fx-background-color: transparent;
+}
+
+/* Charts & Axes Theme Support */
+.axis {
+    -fx-tick-label-fill: -color-text-secondary;
+}
+
+.axis-label {
+    -fx-text-fill: -color-text-secondary;
+}
+
+.chart-legend {
+    -fx-background-color: transparent;
+}
+
+.chart-legend-item {
+    -fx-text-fill: -color-text-secondary;
+}
+
+.chart-pie-label {
+    -fx-fill: -color-text;
+}
+
+.chart-pie-label-line {
+    -fx-stroke: -color-text-muted;
+    -fx-fill: -color-text-muted;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-vertical-grid-lines, .chart-horizontal-grid-lines {
+    -fx-stroke: -color-border-subtle;
 }

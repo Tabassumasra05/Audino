@@ -27,6 +27,7 @@ import com.audino.model.Role;
 import com.audino.service.AuditService;
 import com.audino.ui.components.Chip;
 import com.audino.ui.components.ConfirmDialog;
+import com.audino.ui.components.EmptyState;
 import com.audino.ui.components.SearchField;
 import com.audino.ui.components.StatCard;
 import com.audino.ui.components.Toast;
@@ -85,7 +86,7 @@ public class AdminDashboardController {
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss");
 
     @FXML private StackPane adminRootPane;
-    @FXML private HBox statCardsContainer;
+    @FXML private GridPane statCardsContainer;
     @FXML private LineChart<String, Number> prescriptionTrendChart;
     @FXML private PieChart alertSeverityChart;
     @FXML private BarChart<String, Number> topMedicationsChart;
@@ -170,14 +171,12 @@ public class AdminDashboardController {
     }
 
     private void initOverviewTab() {
-        statCardsContainer.getChildren().clear();
-
         int todayTokens = tokenDAO.findTodayTokens().size();
         int todayRx = prescriptionDAO.countTodayPrescriptions();
         int todayOverrides = prescriptionDAO.countTodayCriticalOverrides();
         int activeStaff = accountDAO.countActiveStaff();
 
-        statCardsContainer.getChildren().addAll(
+        StatCard.populateRow(statCardsContainer,
             new StatCard("Today's Tokens", String.valueOf(todayTokens), "Outpatient registrations today", "mdi2t-ticket-confirmation", "primary-soft"),
             new StatCard("Prescriptions Issued", String.valueOf(todayRx), "Clinical approvals today", "mdi2f-file-check", "success-soft"),
             new StatCard("Critical Overrides", String.valueOf(todayOverrides), "Mandatory rationales logged", "mdi2s-shield-alert", "critical-soft"),
@@ -225,6 +224,12 @@ public class AdminDashboardController {
         colOvDetails.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDetails()));
 
         List<AuditLog> recentLogs = auditDAO.findRecent(10);
+        overviewAuditTable.setPlaceholder(new EmptyState(
+                "mdi2s-shield-check",
+                "No Recent Audit Events",
+                "System logins, critical overrides, and administrative changes will appear here.",
+                true
+        ));
         overviewAuditTable.setItems(FXCollections.observableArrayList(recentLogs));
     }
 
@@ -291,6 +296,11 @@ public class AdminDashboardController {
             }
         });
 
+        staffTable.setPlaceholder(new EmptyState(
+                "mdi2a-account-group",
+                "No Staff Accounts Found",
+                "Try clearing the search query or click '+ Add Staff Member' to register staff."
+        ));
         staffTable.setItems(staffList);
         reloadStaffTable();
 
@@ -471,6 +481,11 @@ public class AdminDashboardController {
         medTypeFilter.setValue("ALL");
         medTypeFilter.valueProperty().addListener((obs, oldVal, newVal) -> reloadFormularyTable());
 
+        medTable.setPlaceholder(new EmptyState(
+                "mdi2p-pill",
+                "No Medications Found",
+                "No formulary entries match your current search or dosage form filter."
+        ));
         medTable.setItems(medList);
         reloadFormularyTable();
 
@@ -640,6 +655,11 @@ public class AdminDashboardController {
         ruleTypeFilter.setValue("ALL");
         ruleTypeFilter.valueProperty().addListener((obs, oldVal, newVal) -> reloadRulesTable());
 
+        ruleTable.setPlaceholder(new EmptyState(
+                "mdi2a-alert-octagon",
+                "No Clinical Rules Found",
+                "No interaction screening rules match the selected category filter."
+        ));
         ruleTable.setItems(ruleList);
         reloadRulesTable();
     }
@@ -759,6 +779,11 @@ public class AdminDashboardController {
         auditColEntity.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEntityType() + " (" + (c.getValue().getEntityId() != null ? c.getValue().getEntityId() : "—") + ")"));
         auditColDetails.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDetails()));
 
+        auditTable.setPlaceholder(new EmptyState(
+                "mdi2f-file-eye",
+                "No Matching Audit Records",
+                "Try adjusting or clearing your audit trail search filter."
+        ));
         auditTable.setItems(auditList);
         reloadAuditTable();
 

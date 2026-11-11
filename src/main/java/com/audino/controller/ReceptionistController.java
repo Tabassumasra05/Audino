@@ -23,6 +23,7 @@ import com.audino.observer.QueueObserver;
 import com.audino.service.QueueService;
 import com.audino.ui.components.Chip;
 import com.audino.ui.components.ConfirmDialog;
+import com.audino.ui.components.EmptyState;
 import com.audino.ui.components.SearchField;
 import com.audino.ui.components.StatCard;
 import com.audino.ui.components.Stepper;
@@ -35,33 +36,34 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ListCell;
-import javafx.util.StringConverter;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.javafx.FontIcon;
+import javafx.util.StringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -75,13 +77,15 @@ public class ReceptionistController implements QueueObserver {
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("hh:mm a");
 
     @FXML private StackPane receptionistRoot;
-    @FXML private HBox receptionKpiContainer;
+    @FXML private GridPane receptionKpiContainer;
 
     // Stepper Container
     @FXML private VBox stepperContainer;
     @FXML private VBox step1Box;
     @FXML private VBox step2Box;
     @FXML private VBox step3Box;
+    @FXML private VBox step4Box;
+    @FXML private Label step4SummaryLabel;
 
     // Step 1: Demographics
     @FXML private TextField firstNameField;
@@ -109,6 +113,7 @@ public class ReceptionistController implements QueueObserver {
     @FXML private Label bmiCategoryLabel;
 
     // Wizard Controls
+    @FXML private HBox wizardNavBox;
     @FXML private Button stepBackBtn;
     @FXML private Button stepNextBtn;
     @FXML private Button registerPatientBtn;
@@ -122,7 +127,10 @@ public class ReceptionistController implements QueueObserver {
 
     @FXML private ComboBox<Account> doctorAssignCombo;
     @FXML private Button issueTokenBtn;
-    @FXML private Label selectedPatientLabel;
+    @FXML private Label selectedPatientPrompt;
+    @FXML private HBox selectedPatientBox;
+    @FXML private Label selectedPatientNameLabel;
+    @FXML private Label selectedPatientMetaLabel;
 
     // Live Queue Table
     @FXML private TableView<Token> queueTable;
@@ -145,6 +153,7 @@ public class ReceptionistController implements QueueObserver {
 
     private final ObservableList<Patient> patientSearchResults = FXCollections.observableArrayList();
     private final ObservableList<Token> liveQueueList = FXCollections.observableArrayList();
+    private final Map<String, String> doctorNameByUsername = new HashMap<>();
 
     @FXML
     public void initialize() {
@@ -164,13 +173,14 @@ public class ReceptionistController implements QueueObserver {
     }
 
     private void initWizard() {
-        // Initialize Stepper
+        // Initialize 4-step Stepper with crisp, non-truncating labels
         stepper = new Stepper(List.of(
-            new Stepper.StepInfo("Demographics", "Patient Identity & Contact"),
-            new Stepper.StepInfo("Clinical History", "Allergies & Known Conditions"),
-            new Stepper.StepInfo("Baseline Vitals", "Intake Triage & BMI")
+            new Stepper.StepInfo("Details", "Demographics"),
+            new Stepper.StepInfo("Medical", "History"),
+            new Stepper.StepInfo("Vitals", "Triage"),
+            new Stepper.StepInfo("Token", "Queue")
         ));
-        stepperContainer.getChildren().add(0, stepper);
+        stepperContainer.getChildren().setAll(stepper);
 
         genderCombo.setItems(FXCollections.observableArrayList(Gender.values()));
         genderCombo.setValue(Gender.MALE);
@@ -243,8 +253,13 @@ public class ReceptionistController implements QueueObserver {
         showWizardStep(currentWizardStep - 1);
     }
 
+    @FXML
+    public void handleStartNewRegistration() {
+        resetWizard();
+    }
+
     private void showWizardStep(int step) {
-        this.currentWizardStep = Math.max(0, Math.min(step, 2));
+        this.currentWizardStep = Math.max(0, Math.min(step, 3));
         stepper.setCurrentStep(currentWizardStep);
 
         step1Box.setVisible(currentWizardStep == 0);
@@ -256,9 +271,25 @@ public class ReceptionistController implements QueueObserver {
         step3Box.setVisible(currentWizardStep == 2);
         step3Box.setManaged(currentWizardStep == 2);
 
-        stepBackBtn.setVisible(currentWizardStep > 0);
+        if (step4Box != null) {
+            step4Box.setVisible(currentWizardStep == 3);
+            step4Box.setManaged(currentWizardStep == 3);
+        }
+
+        boolean showBottomNav = currentWizardStep < 3;
+        if (wizardNavBox != null) {
+            wizardNavBox.setVisible(showBottomNav);
+            wizardNavBox.setManaged(showBottomNav);
+        }
+
+        stepBackBtn.setVisible(currentWizardStep > 0 && currentWizardStep < 3);
+        stepBackBtn.setManaged(currentWizardStep > 0 && currentWizardStep < 3);
+
         stepNextBtn.setVisible(currentWizardStep < 2);
+        stepNextBtn.setManaged(currentWizardStep < 2);
+
         registerPatientBtn.setVisible(currentWizardStep == 2);
+        registerPatientBtn.setManaged(currentWizardStep == 2);
     }
 
     @FXML
@@ -300,10 +331,13 @@ public class ReceptionistController implements QueueObserver {
         }
 
         Toast.show(receptionistRoot, "Registered patient " + saved.getFullName() + " (" + saved.getPatientId() + ") successfully!", Toast.Type.SUCCESS);
-        resetWizard();
 
-        // Auto-select for token issuance
+        // Auto-select for token issuance and advance wizard to Token confirmation step
         selectPatientForToken(saved);
+        if (step4SummaryLabel != null) {
+            step4SummaryLabel.setText(saved.getFullName() + " (" + saved.getPatientId() + ") · Ph: " + saved.getPhone());
+        }
+        showWizardStep(3);
     }
 
     private void resetWizard() {
@@ -323,37 +357,79 @@ public class ReceptionistController implements QueueObserver {
         showWizardStep(0);
     }
 
+    private String formatDoctorLabel(Account a) {
+        if (a == null) return "";
+        if (a instanceof Doctor d && d.getSpecialization() != null && !d.getSpecialization().isBlank()) {
+            return d.getFullName() + " \u00B7 " + d.getSpecialization();
+        }
+        return a.getFullName();
+    }
+
+    private String resolveDoctorFullName(String doctorUsername) {
+        if (doctorUsername == null || doctorUsername.isBlank()) {
+            return "Any Doctor";
+        }
+        String cached = doctorNameByUsername.get(doctorUsername);
+        if (cached != null) {
+            return cached;
+        }
+        return accountDAO.findByUsername(doctorUsername)
+                .map(acc -> {
+                    doctorNameByUsername.put(doctorUsername, acc.getFullName());
+                    return acc.getFullName();
+                })
+                .orElse(doctorUsername);
+    }
+
     private void initQueueManagement() {
-        // Patient Search Table
+        // Patient Search Table with EmptyState placeholder
         patColId.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getPatientId()));
         patColName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFullName()));
         patColPhone.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getPhone()));
 
+        patientSearchResultTable.setPlaceholder(new EmptyState(
+                "mdi2a-account-search",
+                "No Matching Patients Found",
+                "Try searching by patient full name, patient ID, or 10-digit phone number.",
+                true
+        ));
         patientSearchResultTable.setItems(patientSearchResults);
         patientSearchResultTable.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
-            if (n != null) selectPatientForToken(n);
+            if (n != null) {
+                selectPatientForToken(n);
+                patientSearchResultTable.setVisible(false);
+                patientSearchResultTable.setManaged(false);
+            }
         });
 
         patientSearchField.setOnSearch(q -> {
             if (q == null || q.isBlank()) {
                 patientSearchResults.clear();
+                patientSearchResultTable.setVisible(false);
+                patientSearchResultTable.setManaged(false);
             } else {
                 patientSearchResults.setAll(patientDAO.search(q));
+                patientSearchResultTable.setVisible(true);
+                patientSearchResultTable.setManaged(true);
             }
         });
 
-        // Doctor Assignment Combo
-        List<Account> doctors = accountDAO.findAll().stream()
+        // Doctor Assignment Combo & Full Name Cache
+        List<Account> allAccounts = accountDAO.findAll();
+        doctorNameByUsername.clear();
+        for (Account acc : allAccounts) {
+            if (acc.getRole() == Role.DOCTOR) {
+                doctorNameByUsername.put(acc.getUsername(), acc.getFullName());
+            }
+        }
+        List<Account> doctors = allAccounts.stream()
                 .filter(a -> a.getRole() == Role.DOCTOR && a.isActive())
                 .toList();
+
         doctorAssignCombo.setConverter(new StringConverter<>() {
             @Override
             public String toString(Account a) {
-                if (a == null) return "";
-                if (a instanceof Doctor d && d.getSpecialization() != null && !d.getSpecialization().isBlank()) {
-                    return d.getFullName() + " (" + d.getSpecialization() + ")";
-                }
-                return a.getFullName();
+                return formatDoctorLabel(a);
             }
 
             @Override
@@ -367,29 +443,44 @@ public class ReceptionistController implements QueueObserver {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
-                } else if (item instanceof Doctor d && d.getSpecialization() != null && !d.getSpecialization().isBlank()) {
-                    setText(d.getFullName() + " (" + d.getSpecialization() + ")");
+                    setTooltip(null);
                 } else {
-                    setText(item.getFullName());
+                    String fullText = formatDoctorLabel(item);
+                    setText(fullText);
+                    setTextOverrun(OverrunStyle.ELLIPSIS);
+                    setTooltip(new Tooltip(fullText));
                 }
             }
         });
         doctorAssignCombo.setButtonCell(new ListCell<>() {
+            {
+                setMinWidth(0);
+                setPrefWidth(1);
+                setMaxWidth(Double.MAX_VALUE);
+                setTextOverrun(OverrunStyle.ELLIPSIS);
+            }
+
             @Override
             protected void updateItem(Account item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
-                } else if (item instanceof Doctor d && d.getSpecialization() != null && !d.getSpecialization().isBlank()) {
-                    setText(d.getFullName() + " (" + d.getSpecialization() + ")");
                 } else {
-                    setText(item.getFullName());
+                    setText(formatDoctorLabel(item));
                 }
+            }
+        });
+        doctorAssignCombo.valueProperty().addListener((obs, o, n) -> {
+            if (n != null) {
+                doctorAssignCombo.setTooltip(new Tooltip(formatDoctorLabel(n)));
+            } else {
+                doctorAssignCombo.setTooltip(null);
             }
         });
         doctorAssignCombo.setItems(FXCollections.observableArrayList(doctors));
         if (!doctors.isEmpty()) {
             doctorAssignCombo.setValue(doctors.get(0));
+            doctorAssignCombo.setTooltip(new Tooltip(formatDoctorLabel(doctors.get(0))));
         }
 
         // Live Queue Table Columns
@@ -399,7 +490,7 @@ public class ReceptionistController implements QueueObserver {
             Optional<Patient> p = patientDAO.findById(c.getValue().getPatientId());
             return new SimpleStringProperty(p.map(Patient::getFullName).orElse("Patient #" + c.getValue().getPatientId()));
         });
-        queueColDoctor.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDoctorUsername() != null ? c.getValue().getDoctorUsername() : "Any Doctor"));
+        queueColDoctor.setCellValueFactory(c -> new SimpleStringProperty(resolveDoctorFullName(c.getValue().getDoctorUsername())));
 
         queueColStatus.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -472,14 +563,40 @@ public class ReceptionistController implements QueueObserver {
             }
         });
 
+        queueTable.setPlaceholder(new EmptyState(
+                "mdi2t-ticket-outline",
+                "No Outpatient Tokens Issued Today",
+                "Search for a registered patient or complete the intake wizard on the left to issue a token."
+        ));
         queueTable.setItems(liveQueueList);
     }
 
     private void selectPatientForToken(Patient p) {
         this.selectedPatientForToken = p;
-        selectedPatientLabel.setText("Selected: " + p.getFullName() + " (" + p.getPatientId() + ")");
-        selectedPatientLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: -color-primary;");
-        issueTokenBtn.setDisable(false);
+        if (p != null) {
+            selectedPatientNameLabel.setText(p.getFullName() + " (" + p.getPatientId() + ")");
+            selectedPatientMetaLabel.setText(p.getAge() + " yrs · " + p.getGender() + " · Ph: " + p.getPhone());
+            selectedPatientBox.setVisible(true);
+            selectedPatientBox.setManaged(true);
+            selectedPatientPrompt.setVisible(false);
+            selectedPatientPrompt.setManaged(false);
+            issueTokenBtn.setDisable(false);
+        } else {
+            selectedPatientBox.setVisible(false);
+            selectedPatientBox.setManaged(false);
+            selectedPatientPrompt.setVisible(true);
+            selectedPatientPrompt.setManaged(true);
+            issueTokenBtn.setDisable(true);
+        }
+    }
+
+    @FXML
+    public void handleClearSelectedPatient() {
+        selectPatientForToken(null);
+        patientSearchField.setText("");
+        patientSearchResults.clear();
+        patientSearchResultTable.setVisible(false);
+        patientSearchResultTable.setManaged(false);
     }
 
     @FXML
@@ -495,6 +612,9 @@ public class ReceptionistController implements QueueObserver {
         Token token = queueService.issueToken(selectedPatientForToken.getId(), docUser);
         Toast.show(receptionistRoot, "Issued Token #" + token.getTokenNo() + " for " + selectedPatientForToken.getFullName(), Toast.Type.SUCCESS);
         reloadQueueTable();
+        if (currentWizardStep == 3) {
+            resetWizard();
+        }
     }
 
     private void reloadQueueTable() {
@@ -510,7 +630,7 @@ public class ReceptionistController implements QueueObserver {
         long inConsult = all.stream().filter(t -> t.getStatus() == TokenStatus.IN_CONSULTATION).count();
         long completed = all.stream().filter(t -> t.getStatus() == TokenStatus.COMPLETED).count();
 
-        receptionKpiContainer.getChildren().setAll(
+        StatCard.populateRow(receptionKpiContainer,
             new StatCard("Today's Registrations", String.valueOf(total), "Issued outpatient tokens", "mdi2t-ticket-confirmation", "primary-soft"),
             new StatCard("Waiting in OPD", String.valueOf(waiting), "Awaiting doctor consultation", "mdi2a-account-clock", "warning-soft"),
             new StatCard("In Consultation", String.valueOf(inConsult), "Currently with physician", "mdi2s-stethoscope", "info-soft"),

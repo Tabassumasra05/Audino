@@ -14,6 +14,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
@@ -36,11 +37,15 @@
             </graphic>
             <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 16px;">
                 <VBox spacing="20">
-                    <!-- KPI Cards Row -->
-                    <HBox fx:id="statCardsContainer" spacing="16" />
+                    <!-- KPI Cards Row (4 Equal-Width Columns) -->
+                    <GridPane fx:id="statCardsContainer" hgap="16" vgap="16" minHeight="-Infinity" />
 
                     <!-- Charts Grid -->
                     <GridPane hgap="16" vgap="16">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50.0" hgrow="ALWAYS" />
+                            <ColumnConstraints percentWidth="50.0" hgrow="ALWAYS" />
+                        </columnConstraints>
 
                         <!-- Line Chart: 7-day Prescriptions -->
                         <VBox styleClass="surface-card" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS">

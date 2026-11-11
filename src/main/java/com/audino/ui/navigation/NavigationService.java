@@ -2,11 +2,13 @@ package com.audino.ui.navigation;
 
 import com.audino.util.SessionManager;
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -77,22 +79,39 @@ public class NavigationService {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
 
-            Scene scene = new Scene(root);
-            ThemeManager.getInstance().applyTheme(scene);
-
             if (primaryStage != null) {
                 primaryStage.setTitle("Audino - " + title);
-                primaryStage.setScene(scene);
 
-                // Ensure window stays within constraints
                 if (primaryStage.getMinWidth() < 1000) {
                     primaryStage.setMinWidth(1000);
                 }
                 if (primaryStage.getMinHeight() < 600) {
                     primaryStage.setMinHeight(600);
                 }
+
+                Scene existingScene = primaryStage.getScene();
+                if (existingScene != null) {
+                    // Swap root in-place so Windows JavaFX does not reset the maximized stage bounds
+                    existingScene.setRoot(root);
+                    ThemeManager.getInstance().applyTheme(existingScene);
+                } else {
+                    Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+                    Scene scene = new Scene(root, bounds.getWidth(), bounds.getHeight());
+                    ThemeManager.getInstance().applyTheme(scene);
+                    primaryStage.setX(bounds.getMinX());
+                    primaryStage.setY(bounds.getMinY());
+                    primaryStage.setWidth(bounds.getWidth());
+                    primaryStage.setHeight(bounds.getHeight());
+                    primaryStage.setScene(scene);
+                }
+
                 primaryStage.setMaximized(true);
                 primaryStage.show();
+                Platform.runLater(() -> {
+                    if (primaryStage != null) {
+                        primaryStage.setMaximized(true);
+                    }
+                });
             }
 
             logger.info("Root scene switched to: {} ('{}')", fxmlPath, title);

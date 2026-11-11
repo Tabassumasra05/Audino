@@ -199,4 +199,33 @@ public class FxmlLoadTest {
         assertThat(com.audino.ui.components.Avatar.computeInitials("")).isEqualTo("?");
         assertThat(com.audino.ui.components.Avatar.computeInitials(null)).isEqualTo("?");
     }
+
+    @Test
+    @DisplayName("Verify primary stage opens maximized and preserves Scene across root switches")
+    void testStageRemainsMaximizedOnSceneSwitch() throws Exception {
+        CompletableFuture<Void> done = new CompletableFuture<>();
+        Platform.runLater(() -> {
+            Stage isolatedStage = new Stage();
+            try {
+                NavigationService nav = NavigationService.getInstance();
+                nav.setPrimaryStage(isolatedStage);
+                nav.switchRootScene("/fxml/login.fxml", "Sign In");
+                Scene firstScene = isolatedStage.getScene();
+                assertThat(firstScene).isNotNull();
+                assertThat(isolatedStage.isMaximized()).isTrue();
+
+                SessionManager.getInstance().setCurrentAccount(new Receptionist("reception", "hash", "Neha Sharma"));
+                nav.switchRootScene("/fxml/app_shell.fxml", "Receptionist Workspace");
+                assertThat(isolatedStage.getScene()).isSameAs(firstScene);
+                assertThat(isolatedStage.isMaximized()).isTrue();
+                done.complete(null);
+            } catch (Throwable t) {
+                done.completeExceptionally(t);
+            } finally {
+                isolatedStage.close();
+                NavigationService.getInstance().setPrimaryStage(testStage);
+            }
+        });
+        done.get();
+    }
 }

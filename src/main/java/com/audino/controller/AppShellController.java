@@ -37,7 +37,7 @@ import java.time.format.DateTimeFormatter;
 public class AppShellController {
 
     private static final Logger logger = LoggerFactory.getLogger(AppShellController.class);
-    private static final DateTimeFormatter CLOCK_FMT = DateTimeFormatter.ofPattern("EEEE, dd-MMM-yyyy • hh:mm a");
+    private static final DateTimeFormatter CLOCK_FMT = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy • hh:mm a");
 
     @FXML private VBox userProfileBox;
     @FXML private Label userNameLabel;
@@ -190,6 +190,13 @@ public class AppShellController {
         updatePageHeader(account.getRole().name() + " Workspace", "Welcome back, " + account.getFullName());
 
         setActiveNav(navDashboardBtn);
+
+        // Start live top-bar clock & sync theme toggle label
+        updateThemeToggleGraphic();
+        updateClock();
+        Timeline clockTimeline = new Timeline(new KeyFrame(Duration.seconds(15), e -> updateClock()));
+        clockTimeline.setCycleCount(Animation.INDEFINITE);
+        clockTimeline.play();
     }
 
     private void updateClock() {

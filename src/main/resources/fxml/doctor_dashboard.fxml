@@ -38,8 +38,8 @@
             </Button>
         </HBox>
 
-        <!-- KPI Queue Stats Cards -->
-        <HBox fx:id="kpiContainer" spacing="16" />
+        <!-- KPI Queue Stats Cards (4 Equal-Width Columns) -->
+        <GridPane fx:id="kpiContainer" hgap="16" vgap="16" minHeight="-Infinity" />
 
         <!-- Call Next Patient Card & Active Consultation Launcher -->
         <VBox styleClass="surface-card" spacing="16" style="-fx-border-color: -color-primary; -fx-border-width: 1.5px;">
@@ -90,13 +90,16 @@
             </HBox>
 
             <TableView fx:id="queueTableView" prefHeight="280.0" styleClass="data-table">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
                 <columns>
-                    <TableColumn fx:id="colToken" text="Token #" prefWidth="90.0" />
-                    <TableColumn fx:id="colTime" text="Issued Time" prefWidth="110.0" />
-                    <TableColumn fx:id="colPatient" text="Patient Name" prefWidth="200.0" />
-                    <TableColumn fx:id="colAgeGender" text="Age / Gender" prefWidth="110.0" />
-                    <TableColumn fx:id="colStatus" text="Queue Status" prefWidth="140.0" />
-                    <TableColumn fx:id="colAction" text="Action" prefWidth="140.0" />
+                    <TableColumn fx:id="colToken" text="Token #" prefWidth="90.0" minWidth="80.0" />
+                    <TableColumn fx:id="colTime" text="Issued Time" prefWidth="110.0" minWidth="90.0" />
+                    <TableColumn fx:id="colPatient" text="Patient Name" prefWidth="200.0" minWidth="150.0" />
+                    <TableColumn fx:id="colAgeGender" text="Age / Gender" prefWidth="120.0" minWidth="100.0" />
+                    <TableColumn fx:id="colStatus" text="Queue Status" prefWidth="155.0" minWidth="145.0" />
+                    <TableColumn fx:id="colAction" text="Action" prefWidth="120.0" minWidth="100.0" />
                 </columns>
             </TableView>
         </VBox>
