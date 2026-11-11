@@ -25,7 +25,13 @@
            fx:controller="com.audino.controller.ReceptionistController"
            style="-fx-background-color: transparent;">
 
-    <HBox spacing="18" style="-fx-padding: 12px;">
+    <VBox spacing="14" style="-fx-padding: 8px;">
+
+        <!-- TOP: LIVE QUEUE SUMMARY & KPI STATS -->
+        <HBox fx:id="receptionKpiContainer" spacing="14" />
+
+        <!-- MAIN SPLIT WORKSPACE -->
+        <HBox spacing="18" VBox.vgrow="ALWAYS">
 
         <!-- LEFT PANEL: PATIENT REGISTRATION INTAKE WIZARD -->
         <VBox prefWidth="480.0" minWidth="420.0" spacing="16" styleClass="surface-card">
@@ -168,6 +174,8 @@
 
         </VBox>
 
-    </HBox>
+        </HBox>
+
+    </VBox>
 
 </StackPane>

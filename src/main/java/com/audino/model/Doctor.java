@@ -35,7 +35,7 @@ public class Doctor extends Account {
 
     @Override
     public String getDashboardFxml() {
-        return "/fxml/doctor_consultation.fxml";
+        return "/fxml/doctor_dashboard.fxml";
     }
 
     @Override

@@ -50,6 +50,7 @@ public class DataSeeder {
                 seedInteractionRules(conn);
                 seedPatientsAndVitals(conn);
                 seedTokensAndPrescriptions(conn);
+                seedAuditLogs(conn);
 
                 conn.commit();
                 logger.info("Database successfully seeded with clinical demo records.");
@@ -83,7 +84,7 @@ public class DataSeeder {
             // 1. Admin
             ps.setString(1, "admin");
             ps.setString(2, defaultHash);
-            ps.setString(3, "Dr. Sanjay Gupta (Admin)");
+            ps.setString(3, "Sanjay Gupta");
             ps.setString(4, "ADMIN");
             ps.setString(5, "Health Informatics & Hospital Admin");
             ps.setString(6, "ADMIN-001");
@@ -464,15 +465,20 @@ public class DataSeeder {
             ps.executeBatch();
         }
 
-        // Seed 1 completed prescription for T-001 so kiosk and history have data
+        // Seed completed prescriptions so kiosk and history have rich data
         String prescSql = "INSERT INTO prescriptions (id, patient_id, doctor_username, token_id, status, total_cost, created_at) " +
-                          "VALUES (1, 4, 'doctor', 1, 'APPROVED', 142.00, ?)";
+                          "VALUES (?, ?, 'doctor', ?, 'APPROVED', ?, ?)";
         String itemSql = "INSERT INTO prescription_items (prescription_id, medication_id, dosage, frequency, duration_days, instructions, unit_cost, total_units, line_cost) " +
                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement pPs = conn.prepareStatement(prescSql);
              PreparedStatement iPs = conn.prepareStatement(itemSql)) {
-            pPs.setTimestamp(1, Timestamp.valueOf(now.minusHours(3).minusMinutes(25)));
+            // Prescription 1: For Patient 4 (Amit Verma, Token 1)
+            pPs.setLong(1, 1L);
+            pPs.setLong(2, 4L);
+            pPs.setLong(3, 1L);
+            pPs.setBigDecimal(4, new BigDecimal("142.00"));
+            pPs.setTimestamp(5, Timestamp.valueOf(now.minusHours(3).minusMinutes(25)));
             pPs.executeUpdate();
 
             // Item 1: Dolo 650 (Paracetamol) - Twice daily for 5 days = 10 tablets @ 3.00 = 30.00
@@ -511,12 +517,69 @@ public class DataSeeder {
             iPs.setBigDecimal(9, new BigDecimal("40.00"));
             iPs.addBatch();
 
+            // Seed completed prescription for Token 2 (Patient 6: Meena Iyer)
+            pPs.setLong(1, 2L);
+            pPs.setLong(2, 6L);
+            pPs.setLong(3, 2L);
+            pPs.setBigDecimal(4, new BigDecimal("139.00"));
+            pPs.setTimestamp(5, Timestamp.valueOf(now.minusHours(2).minusMinutes(15)));
+            pPs.executeUpdate();
+
+            // Prescription 2 Item 1: Pantoprazole 40
+            iPs.setLong(1, 2L);
+            iPs.setLong(2, 14L);
+            iPs.setString(3, "1 tablet");
+            iPs.setString(4, "ONCE_DAILY");
+            iPs.setInt(5, 14);
+            iPs.setString(6, "Take before breakfast");
+            iPs.setBigDecimal(7, new BigDecimal("80.00"));
+            iPs.setInt(8, 14);
+            iPs.setBigDecimal(9, new BigDecimal("112.00"));
+            iPs.addBatch();
+
+            // Prescription 2 Item 2: Dolo 650
+            iPs.setLong(1, 2L);
+            iPs.setLong(2, 1L);
+            iPs.setString(3, "1 tablet");
+            iPs.setString(4, "THRICE_DAILY");
+            iPs.setInt(5, 3);
+            iPs.setString(6, "After meals for fever");
+            iPs.setBigDecimal(7, new BigDecimal("30.00"));
+            iPs.setInt(8, 9);
+            iPs.setBigDecimal(9, new BigDecimal("27.00"));
+            iPs.addBatch();
+
             iPs.executeBatch();
         }
 
         try (Statement s = conn.createStatement()) {
             s.execute("SELECT setval('tokens_id_seq', (SELECT MAX(id) FROM tokens))");
             s.execute("SELECT setval('prescriptions_id_seq', (SELECT MAX(id) FROM prescriptions))");
+        }
+    }
+
+    private void seedAuditLogs(Connection conn) throws SQLException {
+        logger.info("Seeding initial forensic audit logs...");
+        String sql = "INSERT INTO audit_logs (operator_username, operation_type, entity_type, entity_id, details, timestamp) VALUES (?, ?, ?, ?, ?, ?)";
+        LocalDateTime now = LocalDateTime.now();
+        Object[][] logs = {
+            {"admin", "SYSTEM_BOOTSTRAP", "SYSTEM", "SYS-001", "Audino Clinical Decision Support & EMR system successfully initialized", Timestamp.valueOf(now.minusHours(6))},
+            {"admin", "FORMULARY_SYNC", "MEDICATION", "41_ITEMS", "Loaded national Indian drug formulary with 41 molecules", Timestamp.valueOf(now.minusHours(5))},
+            {"admin", "RULES_COMPILED", "SAFETY_ENGINE", "12_RULES", "Activated multi-dimensional clinical interaction rules (Drug-Drug, Drug-Allergy, Drug-Condition)", Timestamp.valueOf(now.minusHours(4))},
+            {"reception", "PATIENT_INTAKE", "PATIENT", "P-1001", "Registered outpatient Ramesh Sharma with baseline vitals and allergy screening", Timestamp.valueOf(now.minusHours(2).minusMinutes(30))},
+            {"doctor", "TOKEN_CALLED", "TOKEN", "T-003", "Doctor Arjun Mehta called token T-003 into consultation room", Timestamp.valueOf(now.minusHours(1).minusMinutes(10))}
+        };
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (Object[] log : logs) {
+                ps.setString(1, (String) log[0]);
+                ps.setString(2, (String) log[1]);
+                ps.setString(3, (String) log[2]);
+                ps.setString(4, (String) log[3]);
+                ps.setString(5, (String) log[4]);
+                ps.setTimestamp(6, (Timestamp) log[5]);
+                ps.addBatch();
+            }
+            ps.executeBatch();
         }
     }
 }

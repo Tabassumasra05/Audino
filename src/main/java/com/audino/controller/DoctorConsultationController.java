@@ -56,6 +56,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -94,10 +96,13 @@ public class DoctorConsultationController implements QueueObserver {
     private PatientBanner patientBanner;
 
     // Queue Drawer
-    @FXML private TableView<Token> queueTable;
-    @FXML private TableColumn<Token, String> queueColToken;
-    @FXML private TableColumn<Token, String> queueColPatient;
-    @FXML private TableColumn<Token, String> queueColStatus;
+    private static Token initialToken;
+
+    public static void setInitialToken(Token t) {
+        initialToken = t;
+    }
+
+    @FXML private ListView<Token> queueListView;
     @FXML private Button callNextBtn;
 
     // Tab 1: Vitals & Trends
@@ -202,6 +207,18 @@ public class DoctorConsultationController implements QueueObserver {
         initHistoryTab();
 
         reloadQueue();
+
+        if (initialToken != null) {
+            Token t = initialToken;
+            initialToken = null;
+            loadTokenConsultation(t);
+        } else if (!doctorQueue.isEmpty()) {
+            Token autoSelect = doctorQueue.stream()
+                    .filter(t -> t.getStatus() == TokenStatus.IN_CONSULTATION)
+                    .findFirst()
+                    .orElse(doctorQueue.get(0));
+            loadTokenConsultation(autoSelect);
+        }
     }
 
     private void initPatientBanner() {
@@ -211,29 +228,60 @@ public class DoctorConsultationController implements QueueObserver {
     }
 
     private void initQueueDrawer() {
-        queueColToken.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTokenNo()));
-        queueColPatient.setCellValueFactory(c -> {
-            Optional<Patient> p = patientDAO.findById(c.getValue().getPatientId());
-            return new SimpleStringProperty(p.map(Patient::getFullName).orElse("Patient #" + c.getValue().getPatientId()));
-        });
-        queueColStatus.setCellFactory(col -> new TableCell<>() {
+        queueListView.setCellFactory(lv -> new ListCell<>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+            protected void updateItem(Token token, boolean empty) {
+                super.updateItem(token, empty);
+                if (empty || token == null) {
+                    setText(null);
                     setGraphic(null);
+                    setStyle("-fx-background-color: transparent;");
                 } else {
-                    Token t = getTableRow().getItem();
-                    Chip.Variant v = t.getStatus() == TokenStatus.IN_CONSULTATION ? Chip.Variant.PRIMARY : Chip.Variant.WARNING;
-                    Chip chip = new Chip(t.getStatus().name().replace('_', ' '), v);
-                    setGraphic(chip);
+                    VBox card = new VBox(6);
+                    boolean isSelected = activeToken != null && activeToken.getId().equals(token.getId());
+                    if (isSelected) {
+                        card.setStyle("-fx-background-color: -color-primary-soft; -fx-padding: 10px 14px; -fx-background-radius: 8px; -fx-border-color: -color-primary; -fx-border-radius: 8px; -fx-border-width: 1.5px; -fx-cursor: hand;");
+                    } else {
+                        card.setStyle("-fx-background-color: -color-surface; -fx-padding: 10px 14px; -fx-background-radius: 8px; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-border-width: 1px; -fx-cursor: hand;");
+                    }
+
+                    HBox topRow = new HBox(8);
+                    topRow.setAlignment(Pos.CENTER_LEFT);
+
+                    Label tokenNo = new Label(token.getTokenNo());
+                    tokenNo.setStyle("-fx-font-weight: 800; -fx-font-size: 14px; -fx-text-fill: -color-primary;");
+                    HBox.setHgrow(tokenNo, Priority.ALWAYS);
+
+                    Chip.Variant v = token.getStatus() == TokenStatus.IN_CONSULTATION ? Chip.Variant.PRIMARY : Chip.Variant.WARNING;
+                    Chip chip = new Chip(token.getStatus().name().replace('_', ' '), v);
+
+                    topRow.getChildren().addAll(tokenNo, chip);
+
+                    Optional<Patient> pOpt = patientDAO.findById(token.getPatientId());
+                    String name = pOpt.map(Patient::getFullName).orElse("Patient #" + token.getPatientId());
+                    String ageGender = pOpt.map(p -> p.getAge() + " / " + p.getGender()).orElse("");
+
+                    Label nameLabel = new Label(name + (ageGender.isEmpty() ? "" : " (" + ageGender + ")"));
+                    nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: -color-text;");
+
+                    String timeStr = token.getIssuedAt() != null ? "Issued: " + token.getIssuedAt().format(TIME_FMT) : "Walk-in";
+                    long waitMins = token.getIssuedAt() != null ? java.time.Duration.between(token.getIssuedAt(), java.time.LocalDateTime.now()).toMinutes() : 0;
+                    Label timeLabel = new Label(timeStr + " • Wait: " + Math.max(0, waitMins) + "m");
+                    timeLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: -color-text-muted;");
+
+                    card.getChildren().addAll(topRow, nameLabel, timeLabel);
+                    setGraphic(card);
+                    setText(null);
                 }
             }
         });
 
-        queueTable.setItems(doctorQueue);
-        queueTable.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
-            if (n != null) loadTokenConsultation(n);
+        queueListView.setItems(doctorQueue);
+        queueListView.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+            if (n != null) {
+                loadTokenConsultation(n);
+                queueListView.refresh();
+            }
         });
 
         callNextBtn.setOnAction(e -> handleCallNext());
@@ -282,6 +330,9 @@ public class DoctorConsultationController implements QueueObserver {
 
         // Update sticky banner
         patientBanner.setPatient(activePatient, latestVitals);
+        if (queueListView != null) {
+            queueListView.refresh();
+        }
 
         // Reset or load prescription
         Doctor doc = SessionManager.getInstance().getCurrentDoctor();
@@ -347,7 +398,11 @@ public class DoctorConsultationController implements QueueObserver {
         formColGeneric.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getGenericName()));
         formColType.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getType().name()));
         formColStrength.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getStrength()));
-        formColPrice.setCellValueFactory(c -> new SimpleStringProperty("₹" + c.getValue().getPricePerUnit().toPlainString()));
+        formColPrice.setCellValueFactory(c -> new SimpleStringProperty(
+            c.getValue() != null && c.getValue().getPricePerUnit() != null
+                ? "₹" + c.getValue().getPricePerUnit().toPlainString()
+                : "Unset"
+        ));
 
         formularyTable.setItems(formularyResults);
         formularyResults.setAll(medicationDAO.findAll());

@@ -37,7 +37,7 @@ class AccountFactoryTest {
         Doctor doc = (Doctor) acc;
         assertThat(doc.getSpecialization()).isEqualTo("Cardiology");
         assertThat(doc.getRegistrationNumber()).isEqualTo("MCI-12345");
-        assertThat(doc.getDashboardFxml()).isEqualTo("/fxml/doctor_consultation.fxml");
+        assertThat(doc.getDashboardFxml()).isEqualTo("/fxml/doctor_dashboard.fxml");
     }
 
     @Test

@@ -66,6 +66,23 @@
                             </BarChart>
                         </VBox>
                     </GridPane>
+
+                    <!-- Recent Forensic Audit Log Stream -->
+                    <VBox styleClass="surface-card" spacing="12">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="RECENT CLINICAL AUDIT EVENTS &amp; SECURITY ACCESS LOG" styleClass="card-title" HBox.hgrow="ALWAYS" />
+                            <Label text="Forensic Immutable Audit Trail" styleClass="text-secondary" style="-fx-font-size: 11px;" />
+                        </HBox>
+                        <TableView fx:id="overviewAuditTable" prefHeight="220.0" styleClass="data-table">
+                            <columns>
+                                <TableColumn fx:id="colOvTime" text="Timestamp" prefWidth="160.0" />
+                                <TableColumn fx:id="colOvOperator" text="Operator" prefWidth="130.0" />
+                                <TableColumn fx:id="colOvOperation" text="Operation" prefWidth="150.0" />
+                                <TableColumn fx:id="colOvEntity" text="Entity Target" prefWidth="140.0" />
+                                <TableColumn fx:id="colOvDetails" text="Clinical Rationale &amp; Audit Details" prefWidth="380.0" />
+                            </columns>
+                        </TableView>
+                    </VBox>
                 </VBox>
             </ScrollPane>
         </Tab>

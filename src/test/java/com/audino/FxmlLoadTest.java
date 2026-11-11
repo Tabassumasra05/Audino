@@ -65,6 +65,7 @@ public class FxmlLoadTest {
         "/fxml/app_shell.fxml",
         "/fxml/admin_dashboard.fxml",
         "/fxml/receptionist_dashboard.fxml",
+        "/fxml/doctor_dashboard.fxml",
         "/fxml/doctor_consultation.fxml",
         "/fxml/kiosk.fxml"
     })
@@ -93,7 +94,7 @@ public class FxmlLoadTest {
 
         assertThat(shellRoot).isNotNull();
         assertThat(shellController).isNotNull();
-        assertThat(doctor.getDashboardFxml()).isEqualTo("/fxml/doctor_consultation.fxml");
+        assertThat(doctor.getDashboardFxml()).isEqualTo("/fxml/doctor_dashboard.fxml");
 
         StackPane contentArea = NavigationService.getInstance().getContentArea();
         assertThat(contentArea).isNotNull();
@@ -185,5 +186,17 @@ public class FxmlLoadTest {
         Button returnBtn = (Button) returnBtnField.get(kioskController);
         assertThat(returnBtn).isNotNull();
         assertThat(returnBtn.getOnAction()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Verify Avatar computes initials strictly from first + last name, stripping titles and suffixes")
+    void testAvatarInitialsComputation() {
+        assertThat(com.audino.ui.components.Avatar.computeInitials("Dr. Sanjay Gupta (Admin)")).isEqualTo("SG");
+        assertThat(com.audino.ui.components.Avatar.computeInitials("Sanjay Gupta")).isEqualTo("SG");
+        assertThat(com.audino.ui.components.Avatar.computeInitials("Dr. Arjun Mehta")).isEqualTo("AM");
+        assertThat(com.audino.ui.components.Avatar.computeInitials("Neha Sharma")).isEqualTo("NS");
+        assertThat(com.audino.ui.components.Avatar.computeInitials("Admin")).isEqualTo("AD");
+        assertThat(com.audino.ui.components.Avatar.computeInitials("")).isEqualTo("?");
+        assertThat(com.audino.ui.components.Avatar.computeInitials(null)).isEqualTo("?");
     }
 }

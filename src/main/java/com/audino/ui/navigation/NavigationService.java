@@ -91,6 +91,7 @@ public class NavigationService {
                 if (primaryStage.getMinHeight() < 600) {
                     primaryStage.setMinHeight(600);
                 }
+                primaryStage.setMaximized(true);
                 primaryStage.show();
             }
 

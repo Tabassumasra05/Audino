@@ -24,6 +24,7 @@ import com.audino.service.QueueService;
 import com.audino.ui.components.Chip;
 import com.audino.ui.components.ConfirmDialog;
 import com.audino.ui.components.SearchField;
+import com.audino.ui.components.StatCard;
 import com.audino.ui.components.Stepper;
 import com.audino.ui.components.TagInput;
 import com.audino.ui.components.Toast;
@@ -45,6 +46,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ListCell;
+import javafx.util.StringConverter;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -72,6 +75,7 @@ public class ReceptionistController implements QueueObserver {
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("hh:mm a");
 
     @FXML private StackPane receptionistRoot;
+    @FXML private HBox receptionKpiContainer;
 
     // Stepper Container
     @FXML private VBox stepperContainer;
@@ -342,6 +346,47 @@ public class ReceptionistController implements QueueObserver {
         List<Account> doctors = accountDAO.findAll().stream()
                 .filter(a -> a.getRole() == Role.DOCTOR && a.isActive())
                 .toList();
+        doctorAssignCombo.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Account a) {
+                if (a == null) return "";
+                if (a instanceof Doctor d && d.getSpecialization() != null && !d.getSpecialization().isBlank()) {
+                    return d.getFullName() + " (" + d.getSpecialization() + ")";
+                }
+                return a.getFullName();
+            }
+
+            @Override
+            public Account fromString(String string) {
+                return null;
+            }
+        });
+        doctorAssignCombo.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Account item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else if (item instanceof Doctor d && d.getSpecialization() != null && !d.getSpecialization().isBlank()) {
+                    setText(d.getFullName() + " (" + d.getSpecialization() + ")");
+                } else {
+                    setText(item.getFullName());
+                }
+            }
+        });
+        doctorAssignCombo.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(Account item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else if (item instanceof Doctor d && d.getSpecialization() != null && !d.getSpecialization().isBlank()) {
+                    setText(d.getFullName() + " (" + d.getSpecialization() + ")");
+                } else {
+                    setText(item.getFullName());
+                }
+            }
+        });
         doctorAssignCombo.setItems(FXCollections.observableArrayList(doctors));
         if (!doctors.isEmpty()) {
             doctorAssignCombo.setValue(doctors.get(0));
@@ -454,6 +499,23 @@ public class ReceptionistController implements QueueObserver {
 
     private void reloadQueueTable() {
         liveQueueList.setAll(tokenDAO.findTodayTokens());
+        updateQueueSummary();
+    }
+
+    private void updateQueueSummary() {
+        if (receptionKpiContainer == null) return;
+        List<Token> all = tokenDAO.findTodayTokens();
+        long total = all.size();
+        long waiting = all.stream().filter(t -> t.getStatus() == TokenStatus.WAITING).count();
+        long inConsult = all.stream().filter(t -> t.getStatus() == TokenStatus.IN_CONSULTATION).count();
+        long completed = all.stream().filter(t -> t.getStatus() == TokenStatus.COMPLETED).count();
+
+        receptionKpiContainer.getChildren().setAll(
+            new StatCard("Today's Registrations", String.valueOf(total), "Issued outpatient tokens", "mdi2t-ticket-confirmation", "primary-soft"),
+            new StatCard("Waiting in OPD", String.valueOf(waiting), "Awaiting doctor consultation", "mdi2a-account-clock", "warning-soft"),
+            new StatCard("In Consultation", String.valueOf(inConsult), "Currently with physician", "mdi2s-stethoscope", "info-soft"),
+            new StatCard("Completed Visits", String.valueOf(completed), "Prescription issued", "mdi2c-check-circle", "success-soft")
+        );
     }
 
     @Override

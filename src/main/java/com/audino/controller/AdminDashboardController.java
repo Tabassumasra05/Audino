@@ -90,6 +90,14 @@ public class AdminDashboardController {
     @FXML private PieChart alertSeverityChart;
     @FXML private BarChart<String, Number> topMedicationsChart;
 
+    // Overview Tab Recent Audit
+    @FXML private TableView<AuditLog> overviewAuditTable;
+    @FXML private TableColumn<AuditLog, String> colOvTime;
+    @FXML private TableColumn<AuditLog, String> colOvOperator;
+    @FXML private TableColumn<AuditLog, String> colOvOperation;
+    @FXML private TableColumn<AuditLog, String> colOvEntity;
+    @FXML private TableColumn<AuditLog, String> colOvDetails;
+
     // Staff Tab
     @FXML private SearchField staffSearchField;
     @FXML private TableView<Account> staffTable;
@@ -208,6 +216,16 @@ public class AdminDashboardController {
             new XYChart.Data<>("Glycomet", 11)
         );
         topMedicationsChart.getData().setAll(barSeries);
+
+        // Recent Audit Stream
+        colOvTime.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTimestamp() != null ? c.getValue().getTimestamp().format(DATE_FMT) : "—"));
+        colOvOperator.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getOperatorUsername()));
+        colOvOperation.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getOperationType()));
+        colOvEntity.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEntityType() + " #" + (c.getValue().getEntityId() != null ? c.getValue().getEntityId() : "")));
+        colOvDetails.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDetails()));
+
+        List<AuditLog> recentLogs = auditDAO.findRecent(10);
+        overviewAuditTable.setItems(FXCollections.observableArrayList(recentLogs));
     }
 
     private void initStaffTab() {
@@ -442,7 +460,11 @@ public class AdminDashboardController {
         medColGeneric.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getGenericName()));
         medColType.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getType().name()));
         medColStrength.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getStrength()));
-        medColPrice.setCellValueFactory(c -> new SimpleStringProperty("₹" + c.getValue().getPricePerUnit().toPlainString()));
+        medColPrice.setCellValueFactory(c -> new SimpleStringProperty(
+            c.getValue() != null && c.getValue().getPricePerUnit() != null
+                ? "₹" + c.getValue().getPricePerUnit().toPlainString()
+                : "Unset"
+        ));
         medColRxNorm.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getRxNormCode() != null ? c.getValue().getRxNormCode() : "—"));
 
         medTypeFilter.setItems(FXCollections.observableArrayList("ALL", "TABLET", "CAPSULE", "LIQUID", "INJECTION"));

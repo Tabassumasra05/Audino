@@ -32,10 +32,30 @@ public class Avatar extends StackPane {
 
     public static String computeInitials(String name) {
         if (name == null || name.isBlank()) return "?";
-        String[] parts = name.trim().split("\\s+");
-        if (parts.length == 1) {
-            return parts[0].substring(0, Math.min(2, parts[0].length())).toUpperCase();
+
+        // Remove parenthetical notes like (Admin), (Doctor), etc.
+        String cleaned = name.replaceAll("(?i)\\s*\\(.*?\\)", "").trim();
+
+        // Remove common honorific titles
+        cleaned = cleaned.replaceAll("(?i)^(dr\\.?|mr\\.?|mrs\\.?|ms\\.?|prof\\.?|er\\.?)\\s+", "").trim();
+
+        // Split on whitespace or non-alphabetic separators
+        String[] rawParts = cleaned.split("[\\s_\\-\\.]+");
+        java.util.List<String> words = new java.util.ArrayList<>();
+        for (String p : rawParts) {
+            String word = p.replaceAll("[^a-zA-Z]", "");
+            if (!word.isEmpty()) {
+                words.add(word);
+            }
         }
-        return ("" + parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+
+        if (words.isEmpty()) {
+            return "?";
+        }
+        if (words.size() == 1) {
+            String w = words.get(0);
+            return (w.length() >= 2 ? w.substring(0, 2) : w).toUpperCase();
+        }
+        return ("" + words.get(0).charAt(0) + words.get(words.size() - 1).charAt(0)).toUpperCase();
     }
 }

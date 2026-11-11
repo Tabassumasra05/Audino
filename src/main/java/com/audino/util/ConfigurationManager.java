@@ -79,8 +79,12 @@ public class ConfigurationManager {
             targetDb = (qMark != -1) ? sub.substring(0, qMark) : sub;
         }
 
-        // Step 1: Probe external database on port 5432
-        boolean externalAvailable = isPortAvailable("localhost", 5432);
+        boolean testMode = Boolean.parseBoolean(properties.getProperty("db.test.mode", "false"))
+                || "test".equalsIgnoreCase(properties.getProperty("app.env", "dev"))
+                || System.getProperty("audino.test") != null;
+
+        // Step 1: Probe external database on port 5432 (strictly disabled in test mode to protect production/demo data)
+        boolean externalAvailable = !testMode && isPortAvailable("localhost", 5432);
 
         if (externalAvailable) {
             logger.info("Detected running PostgreSQL service on localhost:5432. Ensuring database '{}' exists...", targetDb);
@@ -129,21 +133,38 @@ public class ConfigurationManager {
     }
 
     private void startEmbeddedPostgres(int poolSize, String targetDb) {
-        String dataDirPath = properties.getProperty("db.embedded.data.dir", "./data/pg-data");
-        File dataDir = new File(dataDirPath);
-        if (!dataDir.exists()) {
-            boolean created = dataDir.mkdirs();
-            logger.info("Created embedded PostgreSQL data directory: {} (success: {})", dataDirPath, created);
+        boolean testMode = Boolean.parseBoolean(properties.getProperty("db.test.mode", "false"))
+                || "test".equalsIgnoreCase(properties.getProperty("app.env", "dev"))
+                || System.getProperty("audino.test") != null;
+
+        File dataDir;
+        if (testMode) {
+            try {
+                dataDir = java.nio.file.Files.createTempDirectory("audino-test-pg-").toFile();
+                dataDir.deleteOnExit();
+            } catch (IOException e) {
+                dataDir = new File(System.getProperty("java.io.tmpdir"), "audino-test-pg-" + java.util.UUID.randomUUID());
+                dataDir.mkdirs();
+                dataDir.deleteOnExit();
+            }
+            logger.info("Test mode active: using isolated temporary PostgreSQL directory at {}", dataDir.getAbsolutePath());
+        } else {
+            String dataDirPath = properties.getProperty("db.embedded.data.dir", "./data/pg-data");
+            dataDir = new File(dataDirPath);
+            if (!dataDir.exists()) {
+                boolean created = dataDir.mkdirs();
+                logger.info("Created embedded PostgreSQL data directory: {} (success: {})", dataDirPath, created);
+            }
         }
 
         logger.info("Starting Zero-Setup Embedded PostgreSQL engine at {}...", dataDir.getAbsolutePath());
         try {
             EmbeddedPostgres.Builder builder = EmbeddedPostgres.builder();
             builder.setDataDirectory(dataDir);
-            builder.setCleanDataDirectory(false);
+            builder.setCleanDataDirectory(testMode);
 
-            // Attempt to bind to 5432; if taken by another process, let Zonky assign an ephemeral port
-            if (!isPortAvailable("localhost", 5432)) {
+            // Attempt to bind to 5432 for normal app run; in test mode use an ephemeral port
+            if (!testMode && !isPortAvailable("localhost", 5432)) {
                 builder.setPort(5432);
             }
 
@@ -174,6 +195,12 @@ public class ConfigurationManager {
 
             this.dataSource = new HikariDataSource(config);
             logger.info("HikariCP pool established against Embedded PostgreSQL successfully.");
+
+            if (testMode) {
+                logger.info("Initializing schema and seeding demo records for test database...");
+                new DatabaseInitializer(this.dataSource).initialize();
+                new DataSeeder(this.dataSource).seedIfEmpty();
+            }
         } catch (Exception e) {
             logger.error("Failed to start Embedded PostgreSQL: {}", e.getMessage(), e);
             throw new RuntimeException("Could not initialize Embedded PostgreSQL", e);

@@ -43,6 +43,7 @@ public class AppShellController {
     @FXML private Label userNameLabel;
     @FXML private HBox userRoleContainer;
     @FXML private VBox navContainer;
+    @FXML private Button navDashboardBtn;
     @FXML private Button navConsultationBtn;
     @FXML private Button navQueueBtn;
     @FXML private Button navAdminBtn;
@@ -81,44 +82,71 @@ public class AppShellController {
         Chip roleChip = new Chip(account.getRole().name(), roleVariant);
         userRoleContainer.getChildren().setAll(roleChip);
 
-        // Configure Role-Specific Navigation Visibility
+        // Configure Role-Specific Navigation Visibility and Actions
+        navDashboardBtn.setOnAction(e -> {
+            setActiveNav(navDashboardBtn);
+            String initialFxml = account.getDashboardFxml();
+            String title = account.getRole().name() + " Dashboard";
+            NavigationService.getInstance().navigateTo(initialFxml, title);
+            updatePageHeader(title, "Welcome back, " + account.getFullName());
+        });
+
         if (account.getRole() == Role.RECEPTIONIST) {
             navConsultationBtn.setVisible(false);
             navConsultationBtn.setManaged(false);
             navAdminBtn.setVisible(false);
             navAdminBtn.setManaged(false);
+
+            navDashboardBtn.setText("Reception Desk");
+            navQueueBtn.setText("Live OPD Queue");
+            navQueueBtn.setOnAction(e -> {
+                setActiveNav(navQueueBtn);
+                NavigationService.getInstance().navigateTo("/fxml/receptionist_dashboard.fxml", "Reception Queue");
+                updatePageHeader("Live Queue & Triage", "Patient Intake & Outpatient Consultation Queue");
+            });
         } else if (account.getRole() == Role.DOCTOR) {
             navAdminBtn.setVisible(false);
             navAdminBtn.setManaged(false);
+
+            navDashboardBtn.setText("Doctor Dashboard");
+            navConsultationBtn.setText("Patient Prescribing");
+            navQueueBtn.setText("Consultation Queue");
+
+            navConsultationBtn.setOnAction(e -> {
+                setActiveNav(navConsultationBtn);
+                NavigationService.getInstance().navigateTo("/fxml/doctor_consultation.fxml", "Doctor Consultation");
+                updatePageHeader("Doctor Consultation", "Active Prescribing & Clinical Decision Support");
+            });
+
+            navQueueBtn.setOnAction(e -> {
+                setActiveNav(navQueueBtn);
+                NavigationService.getInstance().navigateTo("/fxml/doctor_dashboard.fxml", "Queue Roster");
+                updatePageHeader("Doctor Consultation Roster", "Live Outpatient Tokens Assigned to You");
+            });
+        } else if (account.getRole() == Role.ADMIN) {
+            navDashboardBtn.setText("Executive Overview");
+            navAdminBtn.setText("Admin Portal");
+            navConsultationBtn.setText("Doctor Workspace");
+            navQueueBtn.setText("Reception Desk");
+
+            navAdminBtn.setOnAction(e -> {
+                setActiveNav(navAdminBtn);
+                NavigationService.getInstance().navigateTo("/fxml/admin_dashboard.fxml", "Admin Portal");
+                updatePageHeader("Administration Portal", "Formulary, Clinical Interaction Rules & System Audit Logs");
+            });
+
+            navConsultationBtn.setOnAction(e -> {
+                setActiveNav(navConsultationBtn);
+                NavigationService.getInstance().navigateTo("/fxml/doctor_consultation.fxml", "Doctor Preview");
+                updatePageHeader("Doctor Consultation Preview", "Clinical Prescribing & Decision Support");
+            });
+
+            navQueueBtn.setOnAction(e -> {
+                setActiveNav(navQueueBtn);
+                NavigationService.getInstance().navigateTo("/fxml/receptionist_dashboard.fxml", "Reception Preview");
+                updatePageHeader("Reception Desk Preview", "Patient Intake & Queue Management");
+            });
         }
-
-        // Live Clock
-        updateClock();
-        Timeline clock = new Timeline(new KeyFrame(Duration.seconds(30), e -> updateClock()));
-        clock.setCycleCount(Animation.INDEFINITE);
-        clock.play();
-
-        // Theme Toggle Icon
-        updateThemeToggleGraphic();
-
-        // Nav Button Actions
-        navConsultationBtn.setOnAction(e -> {
-            setActiveNav(navConsultationBtn);
-            NavigationService.getInstance().navigateTo("/fxml/doctor_consultation.fxml", "Consultation");
-            updatePageHeader("Doctor Consultation", "Active Patient Prescribing & Clinical Decision Support");
-        });
-
-        navQueueBtn.setOnAction(e -> {
-            setActiveNav(navQueueBtn);
-            NavigationService.getInstance().navigateTo("/fxml/receptionist_dashboard.fxml", "Reception & Queue");
-            updatePageHeader("Reception & Triage", "Patient Registration, Vitals Intake & Queue Token Issuance");
-        });
-
-        navAdminBtn.setOnAction(e -> {
-            setActiveNav(navAdminBtn);
-            NavigationService.getInstance().navigateTo("/fxml/admin_dashboard.fxml", "Admin Portal");
-            updatePageHeader("Administration Portal", "Formulary, Clinical Interaction Rules & System Audit Logs");
-        });
 
         navKioskBtn.setOnAction(e -> {
             NavigationService.getInstance().switchRootScene("/fxml/kiosk.fxml", "Patient Kiosk");
@@ -161,13 +189,7 @@ public class AppShellController {
         NavigationService.getInstance().navigateTo(initialFxml, initialTitle);
         updatePageHeader(account.getRole().name() + " Workspace", "Welcome back, " + account.getFullName());
 
-        if (account.getRole() == Role.DOCTOR) {
-            setActiveNav(navConsultationBtn);
-        } else if (account.getRole() == Role.RECEPTIONIST) {
-            setActiveNav(navQueueBtn);
-        } else if (account.getRole() == Role.ADMIN) {
-            setActiveNav(navAdminBtn);
-        }
+        setActiveNav(navDashboardBtn);
     }
 
     private void updateClock() {

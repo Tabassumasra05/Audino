@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Tab?>
@@ -33,21 +34,15 @@
         <!-- MAIN ERGONOMIC SPLIT LAYOUT -->
         <HBox spacing="16" VBox.vgrow="ALWAYS">
 
-            <!-- LEFT DRAWER: LIVE QUEUE -->
-            <VBox prefWidth="300.0" minWidth="260.0" spacing="12" styleClass="surface-card">
+            <!-- LEFT DRAWER: LIVE QUEUE (Min width 320px with spacious Token Cards) -->
+            <VBox prefWidth="340.0" minWidth="320.0" maxWidth="380.0" spacing="12" styleClass="surface-card">
                 <HBox alignment="CENTER_LEFT">
                     <Label text="CONSULTATION QUEUE" styleClass="card-title" HBox.hgrow="ALWAYS" />
                     <Button fx:id="callNextBtn" text="Call Next"
                             style="-fx-background-color: -color-primary; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px; -fx-background-radius: 6px; -fx-padding: 5px 10px; -fx-cursor: hand;" />
                 </HBox>
 
-                <TableView fx:id="queueTable" VBox.vgrow="ALWAYS" styleClass="data-table">
-                    <columns>
-                        <TableColumn fx:id="queueColToken" text="Token" prefWidth="65.0" />
-                        <TableColumn fx:id="queueColPatient" text="Patient Name" prefWidth="130.0" />
-                        <TableColumn fx:id="queueColStatus" text="Status" prefWidth="85.0" />
-                    </columns>
-                </TableView>
+                <ListView fx:id="queueListView" VBox.vgrow="ALWAYS" styleClass="queue-list-view" />
             </VBox>
 
             <!-- RIGHT MAIN CLINICAL TABS -->
@@ -60,7 +55,7 @@
                     </graphic>
                     <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 14px;">
                         <VBox spacing="16">
-                            <Label text="VITAL SIGN SPARKLINE TRENDS" styleClass="card-title" />
+                            <Label text="VITAL SIGN SPARKLINE TRENDS" styleClass="card-title" wrapText="true" />
                             <HBox fx:id="sparklinesContainer" spacing="14" />
 
                             <Separator style="-fx-opacity: 0.3;" />

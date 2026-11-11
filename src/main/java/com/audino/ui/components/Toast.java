@@ -43,6 +43,7 @@ public class Toast extends HBox {
         setSpacing(10);
         setPadding(new Insets(10, 18, 10, 18));
         setMaxWidth(480);
+        setMaxHeight(USE_PREF_SIZE);
         setStyle("-fx-background-color: " + type.bgColor + "; -fx-border-color: " + type.accentColor + "; -fx-border-width: 1px; -fx-background-radius: 8px; -fx-border-radius: 8px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 4);");
 
         try {

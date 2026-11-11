@@ -44,15 +44,17 @@
 }
 
 .section-title {
-    -fx-font-size: 18px;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-text-fill: -color-text;
+    -fx-wrap-text: true;
 }
 
 .card-title {
-    -fx-font-size: 15px;
-    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
     -fx-text-fill: -color-text;
+    -fx-wrap-text: true;
 }
 
 .text-body {
@@ -258,7 +260,7 @@
     -fx-background-color: -color-text-muted;
 }
 
-/* TableView Clean Styling */
+/* TableView Clean Clinical Styling */
 .table-view {
     -fx-background-color: -color-surface;
     -fx-border-color: -color-border;
@@ -275,17 +277,31 @@
 
 .table-view .column-header {
     -fx-background-color: transparent;
-    -fx-padding: 10px;
-    -fx-font-size: 12px;
-    -fx-font-weight: 600;
-    -fx-text-fill: -color-text-secondary;
+    -fx-padding: 10px 12px;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: -color-text;
+    -fx-font-weight: 700;
+    -fx-font-size: 11px;
 }
 
 .table-row-cell {
+    -fx-cell-size: 38px;
     -fx-background-color: -color-surface;
     -fx-border-color: -color-border-subtle;
     -fx-border-width: 0 0 1px 0;
-    -fx-padding: 8px 4px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.table-cell {
+    -fx-padding: 6px 12px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-text-fill: -color-text;
+    -fx-font-size: 13px;
 }
 
 .table-row-cell:odd {
@@ -298,4 +314,70 @@
 
 .table-row-cell:selected {
     -fx-background-color: -color-primary-soft;
+}
+
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: -color-text;
+}
+
+/* TabPane Clinical Design System */
+.tab-pane, .clinical-tab-pane {
+    -fx-background-color: transparent;
+}
+
+.tab-pane .tab-header-area, .clinical-tab-pane .tab-header-area {
+    -fx-padding: 0 0 12px 0;
+}
+
+.tab-pane .tab-header-background, .clinical-tab-pane .tab-header-background {
+    -fx-background-color: -color-surface-alt;
+    -fx-background-radius: 8px;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+}
+
+.tab-pane .tab, .clinical-tab-pane .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6px;
+    -fx-background-insets: 0;
+    -fx-padding: 8px 18px;
+    -fx-cursor: hand;
+}
+
+.tab-pane .tab:hover, .clinical-tab-pane .tab:hover {
+    -fx-background-color: derive(-color-surface, -4%);
+}
+
+.tab-pane .tab:selected, .clinical-tab-pane .tab:selected {
+    -fx-background-color: -color-surface;
+    -fx-border-color: -color-primary;
+    -fx-border-width: 0 0 3px 0;
+    -fx-effect: -shadow-card;
+}
+
+.tab-pane .tab .tab-label, .clinical-tab-pane .tab .tab-label {
+    -fx-text-fill: -color-text-secondary;
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+}
+
+.tab-pane .tab:selected .tab-label, .clinical-tab-pane .tab:selected .tab-label {
+    -fx-text-fill: -color-primary;
+    -fx-font-weight: bold;
+}
+
+/* ListView Clean Card Styling */
+.list-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 4px 0;
+}
+
+.list-cell:empty {
+    -fx-background-color: transparent;
 }

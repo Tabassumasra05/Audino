@@ -44,6 +44,13 @@
 
             <!-- Navigation Links -->
             <VBox fx:id="navContainer" spacing="4" VBox.vgrow="ALWAYS">
+                <Button fx:id="navDashboardBtn" text="Dashboard Home" maxWidth="Infinity" alignment="CENTER_LEFT"
+                        style="-fx-background-color: transparent; -fx-text-fill: -color-nav-text; -fx-font-size: 13px; -fx-font-weight: 500; -fx-background-radius: 8px; -fx-padding: 10px 14px; -fx-cursor: hand;">
+                    <graphic>
+                        <FontIcon iconLiteral="mdi2v-view-dashboard" iconSize="18" iconColor="#2DD4BF" />
+                    </graphic>
+                </Button>
+
                 <Button fx:id="navConsultationBtn" text="Doctor Consultation" maxWidth="Infinity" alignment="CENTER_LEFT"
                         style="-fx-background-color: transparent; -fx-text-fill: -color-nav-text; -fx-font-size: 13px; -fx-font-weight: 500; -fx-background-radius: 8px; -fx-padding: 10px 14px; -fx-cursor: hand;">
                     <graphic>
@@ -124,14 +131,11 @@
                 </HBox>
             </top>
 
-            <!-- Center Content Swap Area (wrapped in ScrollPane for 1366x768 screens) -->
+            <!-- Center Content Swap Area (Direct Stretch for full 1366x768 responsiveness) -->
             <center>
-                <ScrollPane fitToWidth="true" fitToHeight="true"
-                            style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
-                    <StackPane fx:id="contentArea" style="-fx-background-color: -color-bg; -fx-padding: 20px;">
-                        <!-- Pages swap in here dynamically -->
-                    </StackPane>
-                </ScrollPane>
+                <StackPane fx:id="contentArea" style="-fx-background-color: -color-bg; -fx-padding: 16px;">
+                    <!-- Pages swap in here dynamically -->
+                </StackPane>
             </center>
         </BorderPane>
     </center>

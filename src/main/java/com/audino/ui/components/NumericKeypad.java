@@ -34,7 +34,7 @@ public class NumericKeypad extends GridPane {
 
         // Row 4: Clear, 0, Backspace
         Button clearBtn = createKeypadButton("C");
-        clearBtn.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: -color-surface-alt; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-min-width: 65px; -fx-min-height: 55px; -fx-cursor: hand;");
+        clearBtn.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: -color-text; -fx-background-color: -color-surface-alt; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-min-width: 65px; -fx-min-height: 55px; -fx-cursor: hand;");
         clearBtn.setOnAction(e -> {
             if (this.targetField != null) {
                 this.targetField.clear();
@@ -50,11 +50,12 @@ public class NumericKeypad extends GridPane {
         try {
             FontIcon backIcon = new FontIcon("mdi2b-backspace-outline");
             backIcon.setIconSize(20);
+            backIcon.setIconColor(javafx.scene.paint.Color.web("#0F766E"));
             backBtn.setGraphic(backIcon);
         } catch (Exception ignored) {
             backBtn.setText("←");
         }
-        backBtn.setStyle("-fx-font-size: 16px; -fx-background-color: -color-surface-alt; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-min-width: 65px; -fx-min-height: 55px; -fx-cursor: hand;");
+        backBtn.setStyle("-fx-font-size: 16px; -fx-text-fill: -color-text; -fx-background-color: -color-surface-alt; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-min-width: 65px; -fx-min-height: 55px; -fx-cursor: hand;");
         backBtn.setOnAction(e -> {
             if (this.targetField != null) {
                 String cur = this.targetField.getText();
@@ -72,9 +73,9 @@ public class NumericKeypad extends GridPane {
 
     private Button createKeypadButton(String label) {
         Button btn = new Button(label);
-        btn.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-background-color: -color-surface; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-min-width: 65px; -fx-min-height: 55px; -fx-cursor: hand;");
-        btn.setOnMouseEntered(e -> btn.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-background-color: -color-primary-soft; -fx-border-color: -color-primary; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-min-width: 65px; -fx-min-height: 55px; -fx-cursor: hand;"));
-        btn.setOnMouseExited(e -> btn.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-background-color: -color-surface; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-min-width: 65px; -fx-min-height: 55px; -fx-cursor: hand;"));
+        btn.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: -color-text; -fx-background-color: -color-surface; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-min-width: 65px; -fx-min-height: 55px; -fx-cursor: hand;");
+        btn.setOnMouseEntered(e -> btn.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: -color-primary; -fx-background-color: -color-primary-soft; -fx-border-color: -color-primary; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-min-width: 65px; -fx-min-height: 55px; -fx-cursor: hand;"));
+        btn.setOnMouseExited(e -> btn.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: -color-text; -fx-background-color: -color-surface; -fx-border-color: -color-border; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-min-width: 65px; -fx-min-height: 55px; -fx-cursor: hand;"));
         return btn;
     }
 
