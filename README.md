@@ -170,17 +170,17 @@ Every concept in the OOM rubric is cleanly coded and marked with an inline comme
 
 ## 7. Documentation Index
 
-The complete Software Development Life Cycle (SDLC) documentation suite is located in [`docs/`](file:///c:/Users/tabas/Downloads/clinicalprescriber/docs/):
+The complete Software Development Life Cycle (SDLC) documentation suite is located in [`docs/`](docs/):
 
-1. **[`SRS.md`](file:///c:/Users/tabas/Downloads/clinicalprescriber/docs/SRS.md):** Full IEEE 830-1998 Software Requirements Specification.
-2. **[`Requirement_Analysis.md`](file:///c:/Users/tabas/Downloads/clinicalprescriber/docs/Requirement_Analysis.md):** 10 Detailed Use Case Specifications with sequence steps and alternative flows.
-3. **[`UML_Diagrams.md`](file:///c:/Users/tabas/Downloads/clinicalprescriber/docs/UML_Diagrams.md):** 9 PlantUML architectural and behavioral diagrams.
-4. **[`Architecture_and_Design.md`](file:///c:/Users/tabas/Downloads/clinicalprescriber/docs/Architecture_and_Design.md):** Architecture document with Architectural Decision Records (ADRs 001–008).
-5. **[`OOM_Concepts_Map.md`](file:///c:/Users/tabas/Downloads/clinicalprescriber/docs/OOM_Concepts_Map.md):** Exhaustive traceability matrix mapping every OOM rubric concept to source code lines.
-6. **[`Test_Plan.md`](file:///c:/Users/tabas/Downloads/clinicalprescriber/docs/Test_Plan.md):** IEEE 829 Software Verification & Test Plan with 74-test inventory and JaCoCo coverage metrics.
-7. **[`Quality_Assurance.md`](file:///c:/Users/tabas/Downloads/clinicalprescriber/docs/Quality_Assurance.md):** Software Quality Assurance report covering cryptography, SQL injection immunity, and UI viewport ergonomics.
-8. **[`Project_Plan.md`](file:///c:/Users/tabas/Downloads/clinicalprescriber/docs/Project_Plan.md):** SDLC management plan, WBS, Gantt schedule, and risk management log.
-9. **[`Maintenance.md`](file:///c:/Users/tabas/Downloads/clinicalprescriber/docs/Maintenance.md):** Developer extensibility manual and operations guide.
+1. **[`SRS.md`](docs/SRS.md):** Full IEEE 830-1998 Software Requirements Specification.
+2. **[`Requirement_Analysis.md`](docs/Requirement_Analysis.md):** 10 Detailed Use Case Specifications with sequence steps and alternative flows.
+3. **[`UML_Diagrams.md`](docs/UML_Diagrams.md):** 9 PlantUML architectural and behavioral diagrams (with embedded high-res PNG previews).
+4. **[`Architecture_and_Design.md`](docs/Architecture_and_Design.md):** Architecture document with Architectural Decision Records (ADRs 001–008).
+5. **[`OOM_Concepts_Map.md`](docs/OOM_Concepts_Map.md):** Exhaustive traceability matrix mapping every OOM rubric concept to source code lines.
+6. **[`Test_Plan.md`](docs/Test_Plan.md):** IEEE 829 Software Verification & Test Plan with 74-test inventory and JaCoCo coverage metrics.
+7. **[`Quality_Assurance.md`](docs/Quality_Assurance.md):** Software Quality Assurance report covering cryptography, SQL injection immunity, and UI viewport ergonomics.
+8. **[`Project_Plan.md`](docs/Project_Plan.md):** SDLC management plan, WBS, Gantt schedule, and risk management log.
+9. **[`Maintenance.md`](docs/Maintenance.md):** Developer extensibility manual and operations guide.
 
 ---
 
