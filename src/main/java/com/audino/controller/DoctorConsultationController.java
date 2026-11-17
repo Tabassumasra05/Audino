@@ -332,7 +332,7 @@ public class DoctorConsultationController implements QueueObserver {
 
         this.activePatient = patientOpt.get();
         List<PatientVitals> vitalsList = vitalsDAO.findByPatientId(activePatient.getId());
-        this.latestVitals = vitalsList.isEmpty() ? null : vitalsList.get(0);
+        this.latestVitals = vitalsList.isEmpty() ? null : vitalsList.get(vitalsList.size() - 1);
 
         // Update sticky banner
         patientBanner.setPatient(activePatient, latestVitals);

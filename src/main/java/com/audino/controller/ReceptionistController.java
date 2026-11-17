@@ -292,7 +292,7 @@ public class ReceptionistController implements QueueObserver {
         registerPatientBtn.setManaged(currentWizardStep == 2);
     }
 
-    @FXML
+        @FXML
     public void handleRegisterPatient() {
         String first = firstNameField.getText().trim();
         String last = lastNameField.getText().trim();
@@ -301,38 +301,78 @@ public class ReceptionistController implements QueueObserver {
         String phone = phoneField.getText().trim();
         String address = addressArea.getText() != null ? addressArea.getText().trim() : "";
 
-        String patientId = patientDAO.getNextPatientId();
-
-        // 1. Create Patient with Compositional History
-        Patient patient = new Patient(null, patientId, first, last, dob, gender, phone, address);
-        for (String a : allergyTagInput.getTags()) {
-            patient.addAllergy(new PatientAllergy(a, "CRITICAL"));
+        // 1. Validate vitals BEFORE saving anything: either all 7 empty, or all 7 filled and valid
+        List<TextField> vitalFields = List.of(heightField, weightField, sysBpField, diaBpField, pulseField, tempField, spo2Field);
+        int filled = 0;
+        for (TextField f : vitalFields) {
+            if (f.getText() != null && !f.getText().isBlank()) filled++;
         }
-        for (String c : conditionTagInput.getTags()) {
-            patient.addCondition(new PatientCondition(c, LocalDate.now()));
+        boolean hasVitals = filled > 0;
+        double h = 0, w = 0, temp = 0;
+        int sys = 0, dia = 0, pulse = 0, spo2 = 0;
+        if (hasVitals) {
+            if (filled < vitalFields.size()) {
+                Toast.show(receptionistRoot, "Please fill all 7 vital signs, or leave them all empty.", Toast.Type.WARNING);
+                return;
+            }
+            try {
+                h = Double.parseDouble(heightField.getText().trim());
+                w = Double.parseDouble(weightField.getText().trim());
+                sys = Integer.parseInt(sysBpField.getText().trim());
+                dia = Integer.parseInt(diaBpField.getText().trim());
+                pulse = Integer.parseInt(pulseField.getText().trim());
+                temp = Double.parseDouble(tempField.getText().trim());
+                spo2 = Integer.parseInt(spo2Field.getText().trim());
+                // Dry run: the PatientVitals constructor validates clinical ranges
+                new PatientVitals(null, null, LocalDateTime.now(), h, w, sys, dia, pulse, temp, spo2);
+            } catch (NumberFormatException ex) {
+                Toast.show(receptionistRoot, "Vital signs must be numbers (BP, pulse and SpO2 as whole numbers).", Toast.Type.ERROR);
+                return;
+            } catch (IllegalArgumentException ex) {
+                Toast.show(receptionistRoot, ex.getMessage(), Toast.Type.ERROR);
+                return;
+            }
         }
 
-        Patient saved = patientDAO.save(patient);
-
-        // 2. Parse and save initial vitals if provided
-        try {
-            double h = Double.parseDouble(heightField.getText().trim());
-            double w = Double.parseDouble(weightField.getText().trim());
-            int sys = Integer.parseInt(sysBpField.getText().trim());
-            int dia = Integer.parseInt(diaBpField.getText().trim());
-            int pulse = Integer.parseInt(pulseField.getText().trim());
-            double temp = Double.parseDouble(tempField.getText().trim());
-            int spo2 = Integer.parseInt(spo2Field.getText().trim());
-
-            PatientVitals vitals = new PatientVitals(null, saved.getId(), LocalDateTime.now(), h, w, sys, dia, pulse, temp, spo2);
-            vitalsDAO.save(vitals);
-        } catch (Exception ex) {
-            logger.info("Optional initial vitals omitted or partial for patient {}", saved.getPatientId());
+        // 2. Returning patient? Same phone + same name -> reuse the existing record (no duplicate)
+        String cleanPhone = phone.replaceAll("[^0-9]", "");
+        Patient existing = null;
+        if (!cleanPhone.isEmpty()) {
+            for (Patient p : patientDAO.search(cleanPhone)) {
+                String pPhone = p.getPhone() != null ? p.getPhone().replaceAll("[^0-9]", "") : "";
+                if (pPhone.equals(cleanPhone)
+                        && p.getFirstName().equalsIgnoreCase(first)
+                        && p.getLastName().equalsIgnoreCase(last)) {
+                    existing = p;
+                    break;
+                }
+            }
         }
 
-        Toast.show(receptionistRoot, "Registered patient " + saved.getFullName() + " (" + saved.getPatientId() + ") successfully!", Toast.Type.SUCCESS);
+        Patient saved;
+        if (existing != null) {
+            saved = existing;
+            Toast.show(receptionistRoot, "Returning patient found: " + existing.getFullName() + " (" + existing.getPatientId()
+                    + "). New vitals added to their existing record.", Toast.Type.INFO);
+        } else {
+            String patientId = patientDAO.getNextPatientId();
+            Patient patient = new Patient(null, patientId, first, last, dob, gender, phone, address);
+            for (String a : allergyTagInput.getTags()) {
+                patient.addAllergy(new PatientAllergy(a, "CRITICAL"));
+            }
+            for (String c : conditionTagInput.getTags()) {
+                patient.addCondition(new PatientCondition(c, LocalDate.now()));
+            }
+            saved = patientDAO.save(patient);
+            Toast.show(receptionistRoot, "Registered patient " + saved.getFullName() + " (" + saved.getPatientId() + ") successfully!", Toast.Type.SUCCESS);
+        }
 
-        // Auto-select for token issuance and advance wizard to Token confirmation step
+        // 3. Save this visit's vitals (adds a new row to the patient's history, never overwrites)
+        if (hasVitals) {
+            vitalsDAO.save(new PatientVitals(null, saved.getId(), LocalDateTime.now(), h, w, sys, dia, pulse, temp, spo2));
+        }
+
+        // 4. Auto-select for token issuance and advance wizard to Token confirmation step
         selectPatientForToken(saved);
         if (step4SummaryLabel != null) {
             step4SummaryLabel.setText(saved.getFullName() + " (" + saved.getPatientId() + ") · Ph: " + saved.getPhone());
