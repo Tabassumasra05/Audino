@@ -5,11 +5,9 @@
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
 [![Tests](https://img.shields.io/badge/Tests-74%20Passed-brightgreen.svg)]()
 [![Database](https://img.shields.io/badge/Database-PostgreSQL%20%7C%20Embedded-blue.svg)]()
-[![Academic Evaluation](https://img.shields.io/badge/Evaluation-19--Nov--2026-critical.svg)]()
+
 
 > **Audino** is a clinical-grade, zero-setup JavaFX 19 desktop application engineered to eliminate preventable **Adverse Drug Events (ADEs)** in outpatient clinics through real-time multi-dimensional safety screening, mandatory physician override justification with forensic audit trails, and an outpatient 4-phase chronological pill schedule.
-
-Built strictly from foundational computer science principles for double university evaluation in **Object-Oriented Methodology (OOM)** and **Software Engineering (SE)**.
 
 ---
 
@@ -48,9 +46,7 @@ The database automatically initializes its relational schema and seeds realistic
 
 ---
 
-## 3. 5-Minute Clinical Evaluation Demo Script
-
-To demonstrate the system's clinical decision support and architectural rigor during course evaluation:
+## Project Demonstration
 
 ### Step 1: Reception Desk (Patient Intake & Queue Triage)
 1. Log in as `reception` (or click "Reception Neha" demo button).
@@ -184,8 +180,3 @@ The complete Software Development Life Cycle (SDLC) documentation suite is locat
 
 ---
 
-## 8. License & University Submission
-
-Submitted for academic evaluation in **Object-Oriented Methodology (OOM)** and **Software Engineering (SE)**.  
-**Evaluation Date:** 19 November 2026.  
-**License:** Educational & Clinical Open-Source Evaluation License.
