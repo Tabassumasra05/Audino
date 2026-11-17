@@ -1,10 +1,5 @@
 # Audino EMR: Object-Oriented Methodology (OOM) Concepts Map
 
-**Document Version:** 2.0.0  
-**Target Evaluation Date:** 19-Nov-2026  
-**Evaluation Rubrics:** Object-Oriented Methodology (OOM) & Software Engineering (SE)  
-**System Name:** Audino: Intelligent Clinical Decision Support & EMR System  
-
 ---
 
 ## 1. Executive Summary
